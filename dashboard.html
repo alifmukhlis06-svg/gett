@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Hailing Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #1f2937;
+      color: white;
+      padding: 20px;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 12px;
+      margin: 10px 0;
+      background: #374151;
+      text-decoration: none;
+      color: white;
+      border-radius: 8px;
+      transition: 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      background: #4b5563;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Driver Panel</h2>
+    <a href="#">Dashboard</a>
+    <a href="#">Ride Requests</a>
+    <a href="#">Earnings</a>
+    <a href="#">Profile</a>
+    <a href="#">Logout</a>
+  </div>
+
+  <div class="main">
+    <h1>Welcome to your Dashboard</h1>
+
+    <div class="stats-container">
+      <div class="stat-box">
+        <h3>Today's Rides</h3>
+        <p class="stat-number" id="ridesCount">0</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>Total Earnings</h3>
+        <p class="stat-number" id="earnings">RM 0</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>Rating</h3>
+        <p class="stat-number" id="rating">5.0</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Recent Ride Requests</h3>
+      <ul id="rideList">
+        <li>No new rides.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Simple interactive simulation
+    let rides = 0;
+    let earnings = 0;
+
+    setInterval(() => {
+      rides++;
+      earnings += Math.floor(Math.random() * 15) + 5; // RM5-RM20
+
+      document.getElementById('ridesCount').innerText = rides;
+      document.getElementById('earnings').innerText = 'RM ' + earnings;
+
+      const rideList = document.getElementById('rideList');
+      const li = document.createElement('li');
+      li.textContent = 'New ride request received!';
+      rideList.appendChild(li);
+    }, 5000);
+  </script>
+</body>
+</html>

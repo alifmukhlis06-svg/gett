@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Neon E-Hailing — My Rides</title>
+
+<!-- Neon + Modern UI, no external deps -->
+<style>
+  /* CSS Variables (light theme defaults) - RED/YELLOW THEME */
+  :root{
+    --bg: #fef9f0;
+    --panel: rgba(255,255,255,0.9);
+    --muted: #6b7280;
+    --text: #1a1a1a;
+    --accent-1: #ff3b30; /* red */
+    --accent-2: #ffcc00; /* yellow */
+    --glass: rgba(255,255,255,0.06);
+    --shadow: 0 6px 20px rgba(255, 59, 48, 0.12);
+  }
+
+  /* Dark neon theme variables - RED/YELLOW */
+  .dark {
+    --bg: #0a0a0a;
+    --panel: rgba(20, 0, 0, 0.65);
+    --muted: #b2a9a0;
+    --text: #fff5e6;
+    --accent-1: #ff5555;
+    --accent-2: #ffdd00;
+    --glass: linear-gradient(135deg, rgba(255, 85, 85, 0.03), rgba(255, 221, 0, 0.01));
+    --shadow: 0 10px 30px rgba(255, 59, 48, 0.15);
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(255, 59, 48, 0.06), transparent),
+                radial-gradient(900px 400px at 90% 90%, rgba(255, 204, 0, 0.04), transparent),
+                var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    transition: background 0.4s ease, color 0.3s ease;
+  }
+
+  /* Layout */
+  .sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, rgba(255, 85, 85, 0.02), transparent);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .brand {
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo {
+    width:48px; height:48px; border-radius:10px;
+    background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    color: #300; font-weight:700; box-shadow: 0 6px 18px rgba(255, 59, 48, 0.18);
+  }
+  .brand h2 { margin:0; font-size:18px; letter-spacing:0.2px; }
+
+  nav a {
+    display:flex; gap:12px; align-items:center;
+    padding:10px 12px; border-radius:10px;
+    color:var(--text); text-decoration:none; font-weight:600;
+    transition: transform .18s ease, background .18s ease, color .18s ease;
+  }
+  nav a:hover {
+    transform: translateX(6px);
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.02), rgba(255, 221, 0, 0.01));
+  }
+  
+  nav a.active {
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.1), rgba(255, 221, 0, 0.05));
+    border-left: 3px solid var(--accent-1);
+  }
+
+  .toggle-row { margin-top:auto; display:flex; gap:10px; align-items:center; justify-content:space-between; }
+
+  /* Main content */
+  .main {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:18px;
+  }
+
+  .header {
+    font-size:22px; font-weight:700;
+    background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+    -webkit-background-clip: text; background-clip:text; color:transparent;
+  }
+
+  /* Neon card */
+  .card {
+    background: var(--panel);
+    border-radius:14px;
+    padding:18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255, 59, 48, 0.18);
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 4px;
+    background: rgba(255, 85, 85, 0.03);
+    border-radius: 12px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.2s ease;
+  }
+
+  .tab.active {
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.1), rgba(255, 221, 0, 0.08));
+    color: var(--accent-1);
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.1);
+  }
+
+  /* Ride Cards */
+  .rides-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ride-card {
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--panel);
+    border: 1px solid rgba(255, 85, 85, 0.08);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .ride-card:hover {
+    border-color: rgba(255, 221, 0, 0.15);
+    box-shadow: 0 8px 24px rgba(255, 59, 48, 0.1);
+  }
+
+  .ride-card.upcoming {
+    border-left: 4px solid var(--accent-1);
+  }
+
+  .ride-card.completed {
+    border-left: 4px solid var(--accent-2);
+    opacity: 0.95;
+  }
+
+  .ride-card.cancelled {
+    border-left: 4px solid #666;
+    opacity: 0.7;
+  }
+
+  .ride-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.1), rgba(255, 221, 0, 0.08));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--accent-1);
+  }
+
+  .ride-details {
+    flex: 1;
+  }
+
+  .ride-route {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .ride-route .from {
+    color: var(--accent-1);
+  }
+
+  .ride-route .to {
+    color: var(--accent-2);
+  }
+
+  .ride-info {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .ride-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ride-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-upcoming {
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.15), rgba(255, 221, 0, 0.1));
+    color: var(--accent-1);
+  }
+
+  .status-completed {
+    background: rgba(255, 221, 0, 0.15);
+    color: #ffcc00;
+  }
+
+  .status-cancelled {
+    background: rgba(102, 102, 102, 0.15);
+    color: #999;
+  }
+
+  .ride-price {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent-1);
+    text-align: right;
+  }
+
+  .ride-price .small {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .ride-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+    color: #300;
+    box-shadow: 0 6px 18px rgba(255, 59, 48, 0.15);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 59, 48, 0.2);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255, 85, 85, 0.1);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 85, 85, 0.05);
+    color: var(--text);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  /* Toggle */
+  .switch { width:50px; height:28px; background:linear-gradient(90deg,#300, #221); border-radius:14px; position:relative; cursor:pointer; }
+  .switch .knob { position:absolute; width:22px; height:22px; border-radius:50%; top:3px; left:3px; background:white; transition:left .18s ease, box-shadow .18s ease; box-shadow:0 6px 18px rgba(255, 59, 48, 0.12); }
+  .dark-toggle-on .knob { left:25px; box-shadow: 0 10px 30px rgba(255, 221, 0, 0.12); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .modal {
+    width: 90%;
+    max-width: 500px;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(255, 59, 48, 0.2);
+    animation: slideUp 0.4s ease;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--muted);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 85, 85, 0.1);
+    color: var(--accent-1);
+  }
+
+  .modal-content {
+    margin-bottom: 24px;
+  }
+
+  .modal-details {
+    background: linear-gradient(180deg, rgba(255, 85, 85, 0.02), rgba(255, 221, 0, 0.01));
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    border: 1px solid rgba(255, 85, 85, 0.03);
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 85, 85, 0.03);
+  }
+
+  .detail-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .detail-label {
+    color: var(--muted);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .modal-actions .btn {
+    flex: 1;
+  }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes fadeInUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+  .fade-in { animation: fadeInUp .36s ease both; }
+
+  /* Responsive */
+  @media (max-width: 980px) {
+    body { flex-direction: column; padding: 16px; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; }
+    .ride-card { flex-direction: column; align-items: flex-start; }
+    .ride-price { align-self: flex-end; }
+    .ride-actions { align-self: stretch; }
+    .modal { margin: 20px; padding: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    .ride-info { flex-wrap: wrap; gap: 8px; }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .tabs { flex-direction: column; }
+  }
+</style>
+</head>
+<body class="dark">
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">NH</div>
+    <div>
+      <h2>NeonHail</h2>
+      <div class="small muted">Fast • Hot • Smooth</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="user.html">🚗 Book Ride</a>
+    <a href="myrides.html" class="active">🕒 My Rides</a>
+    <a href="#">💳 Payments</a>
+    <a href="#">👤 Profile</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="header">My Rides</div>
+      <div class="small muted">View your past and upcoming rides</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn btn-secondary" onclick="refreshRides()">Refresh</button>
+      <button class="btn btn-primary" onclick="goToBooking()">Book New Ride</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('upcoming')">Upcoming Rides</div>
+    <div class="tab" onclick="showTab('past')">Past Rides</div>
+  </div>
+
+  <!-- Upcoming Rides -->
+  <div id="upcomingRides" class="rides-container">
+    <div class="ride-card upcoming fade-in">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">UiTM Arau</span> → <span class="to">Arau KTM Station</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Tomorrow, 8:30 AM</div>
+          <div class="ride-info-item">👤 Driver: Hanis Sofea</div>
+          <div class="ride-info-item">🚘 Proton Saga (AND 2874)</div>
+          <div class="ride-info-item">📏 3.2 km</div>
+        </div>
+        <span class="ride-status status-upcoming">Upcoming</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('upcoming-1')">View Details</button>
+          <button class="btn btn-secondary" onclick="cancelRide('upcoming-1')">Cancel Ride</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        8.50 RM
+        <span class="small">Estimated</span>
+      </div>
+    </div>
+
+    <div class="ride-card upcoming fade-in" style="animation-delay: 0.1s">
+      <div class="ride-icon">🏍️</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Kangar Bus Station</span> → <span class="to">Pusat Bandar Kangar</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 15, 2:00 PM</div>
+          <div class="ride-info-item">👤 Driver: Aslam Haziq </div>
+          <div class="ride-info-item">🏍️ Yamaha LC135 (AJB 2559)</div>
+          <div class="ride-info-item">📏 5.8 km</div>
+        </div>
+        <span class="ride-status status-upcoming">Upcoming</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('upcoming-2')">View Details</button>
+          <button class="btn btn-secondary" onclick="cancelRide('upcoming-2')">Cancel Ride</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        6.80 RM
+        <span class="small">Estimated</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Rides (Hidden by default) -->
+  <div id="pastRides" class="rides-container" style="display: none;">
+    <div class="ride-card completed fade-in">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Yasmeen Nasi Kandar</span> → <span class="to">UiTM Arau</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 10, 9:15 AM</div>
+          <div class="ride-info-item">👤 Driver: Alif Mukhlis</div>
+          <div class="ride-info-item">🚘 Nissan GTR R34 (ALF 1)</div>
+          <div class="ride-info-item">📏 7.5 km</div>
+        </div>
+        <span class="ride-status status-completed">Completed</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-1')">View Details</button>
+          <button class="btn btn-secondary" onclick="rateRide('past-1')">Rate Driver</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        12.30 RM
+        <span class="small">Paid via e-wallet</span>
+      </div>
+    </div>
+
+    <div class="ride-card completed fade-in" style="animation-delay: 0.1s">
+      <div class="ride-icon">🏍️</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Kolej Dahlia</span> → <span class="to">Kompleks Star</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 8, 6:45 PM</div>
+          <div class="ride-info-item">👤 Driver: Haziq Aiman</div>
+          <div class="ride-info-item">🏍️ Yamaha Y15 (JBS 7191)</div>
+          <div class="ride-info-item">📏 2.1 km</div>
+        </div>
+        <span class="ride-status status-completed">Completed</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-2')">View Details</button>
+          <button class="btn btn-secondary" onclick="rateRide('past-2')">Rate Driver</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        3.70 RM
+        <span class="small">Paid via cash</span>
+      </div>
+    </div>
+
+    <div class="ride-card cancelled fade-in" style="animation-delay: 0.2s">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">HEA UITM Arau</span> → <span class="to">Ayam Gepuk Pak Gembus Arau</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 5, 3:30 PM</div>
+          <div class="ride-info-item">👤 Driver: Harith Yusri</div>
+          <div class="ride-info-item">🚘 Toyota Vios (KEN 5782)</div>
+          <div class="ride-info-item">📏 4.3 km</div>
+        </div>
+        <span class="ride-status status-cancelled">Cancelled</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-3')">View Details</button>
+          <button class="btn btn-secondary" onclick="bookSimilarRide('past-3')">Book Again</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        —
+        <span class="small">No charge</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State (Hidden) -->
+  <div id="emptyState" class="empty-state card" style="display: none;">
+    <div class="empty-icon">🚗</div>
+    <h3>No rides found</h3>
+    <p class="small muted">You haven't taken any rides in this category yet.</p>
+    <button class="btn btn-primary" onclick="goToBooking()">Book Your First Ride</button>
+  </div>
+</main>
+
+<!-- Ride Details Modal -->
+<div id="rideModal" class="modal-overlay" style="display: none;">
+  <div class="modal card">
+    <div class="modal-header">
+      <div class="modal-title">Ride Details</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="small muted" id="modalStatus">Upcoming Ride</div>
+      
+      <div class="modal-details">
+        <div class="detail-item">
+          <span class="detail-label">From:</span>
+          <span id="modalFrom">UiTM Arau</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">To:</span>
+          <span id="modalTo">Arau KTM Station</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date & Time:</span>
+          <span id="modalDateTime">Tomorrow, 8:30 AM</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Driver:</span>
+          <span id="modalDriver">Hanis Sofea</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Vehicle:</span>
+          <span id="modalVehicle"> Proton Saga (AND 2874)</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Distance:</span>
+          <span id="modalDistance">3.2 km</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Estimated Duration:</span>
+          <span id="modalDuration">8 minutes</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Payment Method:</span>
+          <span id="modalPayment">QR payments</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Fare:</span>
+          <span class="ride-price" id="modalFare">RM 8.50 </span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions" id="modalActions">
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary" id="modalPrimaryAction">Track Ride</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Theme toggle logic
+  const body = document.body;
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    const knob = darkSwitch.querySelector('.knob');
+    darkSwitch.classList.toggle('dark-toggle-on');
+    body.classList.toggle('dark');
+    // small visual: move knob
+    if (body.classList.contains('dark')) {
+      knob.style.left = '25px';
+      knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+    } else {
+      knob.style.left = '3px';
+      knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+    }
+  });
+
+  // Tab switching
+  function showTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    if (tabName === 'upcoming') {
+      document.querySelector('.tab:first-child').classList.add('active');
+      document.getElementById('upcomingRides').style.display = 'flex';
+      document.getElementById('pastRides').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
+    } else {
+      document.querySelector('.tab:last-child').classList.add('active');
+      document.getElementById('upcomingRides').style.display = 'none';
+      document.getElementById('pastRides').style.display = 'flex';
+      document.getElementById('emptyState').style.display = 'none';
+    }
+  }
+
+  // Ride data for modals
+  const rideData = {
+    'upcoming-1': {
+      from: 'UiTM Arau',
+      to: 'Arau KTM Station',
+      dateTime: 'Tomorrow, 8:30 AM',
+      driver: ' Hanis Sofea',
+      vehicle: 'Proton Saga (AND 2874)',
+      distance: '3.2 km',
+      duration: '8 minutes',
+      payment: 'e-Wallet',
+      fare: 'RM 8.50 ',
+      status: 'upcoming',
+      primaryAction: 'Track Ride'
+    },
+    'upcoming-2': {
+      from: 'Kangar Bus Station',
+      to: 'Pusat Bandar Kangar',
+      dateTime: 'Dec 15, 2:00 PM',
+      driver: 'Aslam Haziq',
+      vehicle: 'Yamaha LC135 (AJB 2559)',
+      distance: '5.8 km',
+      duration: '12 minutes',
+      payment: 'Cash',
+      fare: 'RM 6.80 ',
+      status: 'upcoming',
+      primaryAction: 'Track Ride'
+    },
+    'past-1': {
+      from: 'Yasmeen Nasi Kandar',
+      to: 'UiTM Arau',
+      dateTime: 'Dec 10, 9:15 AM',
+      driver: 'Alif Mukhlis',
+      vehicle: 'GTR R34 (ALF 1)',
+      distance: '7.5 km',
+      duration: '15 minutes',
+      payment: 'e-Wallet',
+      fare: 'RM 12.30 ',
+      status: 'completed',
+      primaryAction: 'Rate Driver'
+    },
+    'past-2': {
+      from: 'Kolej Dahlia',
+      to: 'Kompleks Star',
+      dateTime: 'Dec 8, 6:45 PM',
+      driver: 'Haziq Aiman',
+      vehicle: 'Yamaha Y15 (JBS 7191)',
+      distance: '2.1 km',
+      duration: '5 minutes',
+      payment: 'Cash',
+      fare: 'RM 3 ',
+      status: 'completed',
+      primaryAction: 'Rate Driver'
+    },
+    'past-3': {
+      from: 'HEA UITM Arau',
+      to: 'Ayam Gepuk Pak Gembus Arau',
+      dateTime: 'Dec 5, 3:30 PM',
+      driver: 'Harith Yusri',
+      vehicle: 'Toyota Vios (KEN 5782)',
+      distance: '4.3 km',
+      duration: '10 minutes',
+      payment: '—',
+      fare: '—',
+      status: 'cancelled',
+      primaryAction: 'Book Again'
+    }
+  };
+
+  // View ride details
+  function viewRideDetails(rideId) {
+    const ride = rideData[rideId];
+    if (!ride) return;
+
+    // Update modal content
+    document.getElementById('modalStatus').textContent = 
+      ride.status === 'upcoming' ? 'Upcoming Ride' :
+      ride.status === 'completed' ? 'Completed Ride' : 'Cancelled Ride';
+    
+    document.getElementById('modalFrom').textContent = ride.from;
+    document.getElementById('modalTo').textContent = ride.to;
+    document.getElementById('modalDateTime').textContent = ride.dateTime;
+    document.getElementById('modalDriver').textContent = ride.driver;
+    document.getElementById('modalVehicle').textContent = ride.vehicle;
+    document.getElementById('modalDistance').textContent = ride.distance;
+    document.getElementById('modalDuration').textContent = ride.duration;
+    document.getElementById('modalPayment').textContent = ride.payment;
+    document.getElementById('modalFare').textContent = ride.fare;
+    
+    // Update primary action button
+    const primaryActionBtn = document.getElementById('modalPrimaryAction');
+    primaryActionBtn.textContent = ride.primaryAction;
+    
+    // Set appropriate click handler based on ride status
+    primaryActionBtn.onclick = () => {
+      closeModal();
+      if (ride.status === 'upcoming') {
+        alert('Opening ride tracker...');
+      } else if (ride.status === 'completed') {
+        rateRide(rideId);
+      } else {
+        bookSimilarRide(rideId);
+      }
+    };
+
+    // Show modal
+    document.getElementById('rideModal').style.display = 'flex';
+  }
+
+  // Close modal
+  function closeModal() {
+    document.getElementById('rideModal').style.display = 'none';
+  }
+
+  // Cancel ride
+  function cancelRide(rideId) {
+    if (confirm('Are you sure you want to cancel this ride? A cancellation fee may apply.')) {
+      alert('Ride cancelled successfully.');
+      // In a real app, you would update the UI here
+    }
+  }
+
+  // Rate ride
+  function rateRide(rideId) {
+    const rating = prompt('Rate this ride (1-5 stars):', '5');
+    if (rating && rating >= 1 && rating <= 5) {
+      alert(`Thank you! You rated ${rating} stars.`);
+    }
+  }
+
+  // Book similar ride
+  function bookSimilarRide(rideId) {
+    alert('Opening booking page with pre-filled details...');
+    // In a real app, you would redirect to booking page with pre-filled data
+  }
+
+  // Refresh rides
+  function refreshRides() {
+    const tabs = document.querySelectorAll('.tab');
+    const activeTab = Array.from(tabs).find(tab => tab.classList.contains('active'));
+    
+    // Show loading state
+    alert('Refreshing rides...');
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      alert('Rides refreshed!');
+    }, 500);
+  }
+
+  // Navigate to booking page
+  function goToBooking() {
+    window.location.href = 'user.html';
+  }
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('rideModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('rideModal')) {
+      closeModal();
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Neon E-Hailing — User</title>
+
+<!-- Neon + Modern UI, no external deps -->
+<style>
+  /* CSS Variables (light theme defaults) - RED/YELLOW THEME */
+  :root{
+    --bg: #fef9f0;
+    --panel: rgba(255,255,255,0.9);
+    --muted: #6b7280;
+    --text: #1a1a1a;
+    --accent-1: #ff3b30; /* red */
+    --accent-2: #ffcc00; /* yellow */
+    --glass: rgba(255,255,255,0.06);
+    --shadow: 0 6px 20px rgba(255, 59, 48, 0.12);
+  }
+
+  /* Dark neon theme variables - RED/YELLOW */
+  .dark {
+    --bg: #0a0a0a;
+    --panel: rgba(20, 0, 0, 0.65);
+    --muted: #b2a9a0;
+    --text: #fff5e6;
+    --accent-1: #ff5555;
+    --accent-2: #ffdd00;
+    --glass: linear-gradient(135deg, rgba(255, 85, 85, 0.03), rgba(255, 221, 0, 0.01));
+    --shadow: 0 10px 30px rgba(255, 59, 48, 0.15);
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(255, 59, 48, 0.06), transparent),
+                radial-gradient(900px 400px at 90% 90%, rgba(255, 204, 0, 0.04), transparent),
+                var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    transition: background 0.4s ease, color 0.3s ease;
+  }
+
+  /* Layout */
+  .sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, rgba(255, 85, 85, 0.02), transparent);
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .brand {
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo {
+    width:48px; height:48px; border-radius:10px;
+    background: linear-gradient(135deg,var(--accent-1),var(--accent-2));
+    display:flex; align-items:center; justify-content:center;
+    color: #300; font-weight:700; box-shadow: 0 6px 18px rgba(255, 59, 48, 0.18);
+  }
+  .brand h2 { margin:0; font-size:18px; letter-spacing:0.2px; }
+
+  nav a {
+    display:flex; gap:12px; align-items:center;
+    padding:10px 12px; border-radius:10px;
+    color:var(--text); text-decoration:none; font-weight:600;
+    transition: transform .18s ease, background .18s ease, color .18s ease;
+  }
+  nav a:hover {
+    transform: translateX(6px);
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.02), rgba(255, 221, 0, 0.01));
+  }
+
+  .toggle-row { margin-top:auto; display:flex; gap:10px; align-items:center; justify-content:space-between; }
+
+  /* Main content */
+  .main {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:18px;
+  }
+
+  .header {
+    font-size:22px; font-weight:700;
+    background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+    -webkit-background-clip: text; background-clip:text; color:transparent;
+  }
+
+  /* Neon card */
+  .card {
+    background: var(--panel);
+    border-radius:14px;
+    padding:18px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .map-card {
+    display:flex; gap:18px; align-items:stretch;
+  }
+
+  .map {
+    flex:1; border-radius:12px; overflow:hidden; min-height:320px; position:relative;
+    box-shadow: 0 6px 30px rgba(255, 59, 48, 0.12) inset;
+    border: 1px solid rgba(255, 85, 85, 0.04);
+  }
+  .map iframe { width:100%; height:100%; border:0; display:block; }
+
+  /* Booking panel */
+  .panel {
+    width:420px; min-width:320px; display:flex; flex-direction:column; gap:12px;
+  }
+
+  h3 { margin:0 0 8px 0; font-size:16px; letter-spacing:0.2px; }
+  label { display:block; font-size:13px; margin-bottom:6px; color:var(--muted); }
+
+  .input {
+    width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(255, 59, 48, 0.06);
+    background: rgba(255, 255, 255, 0.03);
+    color:var(--text); font-size:14px; outline:none;
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .input:focus { box-shadow: 0 6px 20px rgba(255, 59, 48, 0.08); border-color:var(--accent-1); }
+
+  .booking-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .btn {
+    padding:10px 14px; border-radius:10px; cursor:pointer; border:none; font-weight:600;
+    background: linear-gradient(90deg,var(--accent-1),var(--accent-2));
+    color: #300; box-shadow: 0 10px 30px rgba(255, 59, 48, 0.12);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(255, 59, 48, 0.16); }
+
+  .small-btn { padding:8px 12px; font-size:13px; background:transparent; color:var(--muted); border:1px solid rgba(255, 85, 85, 0.03); }
+
+  /* Vehicle selection */
+  .vehicle-list { display:flex; gap:10px; }
+  .vehicle {
+    flex:1; padding:10px; border-radius:10px; cursor:pointer; display:flex; gap:10px; align-items:center;
+    border:1px solid rgba(255, 85, 85, 0.03); transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+  }
+  .vehicle svg { width:44px; height:44px; flex-shrink:0; filter: drop-shadow(0 6px 18px rgba(255, 59, 48, 0.08)); }
+  .vehicle.selected {
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.08), rgba(255, 221, 0, 0.06));
+    box-shadow: 0 10px 40px rgba(255, 59, 48, 0.08);
+    transform: translateY(-6px);
+    border-color: rgba(255, 221, 0, 0.12);
+  }
+
+  .estimate {
+    padding:12px; border-radius:10px; background: linear-gradient(180deg, rgba(255, 85, 85, 0.02), rgba(255, 221, 0, 0.01));
+    border:1px solid rgba(255, 85, 85, 0.03);
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .meter { font-size:20px; font-weight:700; }
+  .muted { color:var(--muted); font-size:13px; }
+
+  /* Recent trips */
+  .trips { display:flex; flex-direction:column; gap:8px; }
+  .trip { padding:10px; border-radius:8px; display:flex; justify-content:space-between; background: rgba(255, 85, 85, 0.02); }
+
+  /* Footer small text */
+  .small { font-size:12px; color:var(--muted); }
+
+  /* Toggle */
+  .switch { width:50px; height:28px; background:linear-gradient(90deg,#300, #221); border-radius:14px; position:relative; cursor:pointer; }
+  .switch .knob { position:absolute; width:22px; height:22px; border-radius:50%; top:3px; left:3px; background:white; transition:left .18s ease, box-shadow .18s ease; box-shadow:0 6px 18px rgba(255, 59, 48, 0.12); }
+  .dark-toggle-on .knob { left:25px; box-shadow: 0 10px 30px rgba(255, 221, 0, 0.12); }
+
+  /* Driver selection modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease;
+  }
+
+  .driver-modal {
+    width: 90%;
+    max-width: 500px;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(255, 59, 48, 0.2);
+    animation: slideUp 0.4s ease;
+  }
+
+  .driver-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .driver-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 85, 85, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .driver-card:hover {
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.05), rgba(255, 221, 0, 0.03));
+    transform: translateY(-2px);
+  }
+
+  .driver-card.selected {
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.1), rgba(255, 221, 0, 0.06));
+    border-color: rgba(255, 221, 0, 0.2);
+    box-shadow: 0 8px 24px rgba(255, 59, 48, 0.12);
+  }
+
+  .driver-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    color: #300;
+  }
+
+  .driver-info {
+    flex: 1;
+  }
+
+  .driver-name {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .driver-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .stars {
+    color: #ffcc00;
+  }
+
+  .driver-details {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .driver-price {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--accent-1);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .modal-actions .btn {
+    flex: 1;
+  }
+
+  /* Loading Screen */
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .loading-content {
+    text-align: center;
+    max-width: 400px;
+    padding: 40px;
+  }
+
+  .loading-spinner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    position: relative;
+    margin: 0 auto 30px;
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  .loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    border-radius: 50%;
+    border: 5px solid transparent;
+    border-top-color: var(--accent-1);
+    border-right-color: var(--accent-2);
+    animation: spin 1.5s linear infinite;
+  }
+
+  .loading-text {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .loading-subtext {
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  /* Message Page */
+  .message-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .message-content {
+    text-align: center;
+    max-width: 480px;
+    padding: 40px;
+    background: var(--panel);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(8px);
+  }
+
+  .message-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px;
+    font-size: 48px;
+    color: #300;
+    box-shadow: 0 20px 40px rgba(255, 59, 48, 0.2);
+  }
+
+  .message-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .message-details {
+    background: linear-gradient(180deg, rgba(255, 85, 85, 0.02), rgba(255, 221, 0, 0.01));
+    border-radius: 12px;
+    padding: 20px;
+    margin: 24px 0;
+    border: 1px solid rgba(255, 85, 85, 0.03);
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 85, 85, 0.03);
+  }
+
+  .detail-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  .message-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .message-actions .btn {
+    flex: 1;
+  }
+
+  /* Chat Page Styles */
+  .chat-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    z-index: 3000;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .chat-header {
+    padding: 16px 24px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: #300;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.1);
+  }
+
+  .back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #300;
+    font-size: 20px;
+  }
+
+  .chat-header-info {
+    flex: 1;
+  }
+
+  .chat-header-name {
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .chat-header-status {
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .chat-messages-container {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .message {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    line-height: 1.4;
+    position: relative;
+  }
+
+  .message.received {
+    align-self: flex-start;
+    background: rgba(255, 85, 85, 0.05);
+    border: 1px solid rgba(255, 85, 85, 0.1);
+    border-bottom-left-radius: 4px;
+  }
+
+  .message.sent {
+    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.1), rgba(255, 221, 0, 0.1));
+    border: 1px solid rgba(255, 221, 0, 0.2);
+    border-bottom-right-radius: 4px;
+  }
+
+  .message-text {
+    margin-bottom: 4px;
+  }
+
+  .message-time {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  .chat-input-container {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(255, 85, 85, 0.1);
+    background: var(--panel);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .chat-input {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 85, 85, 0.2);
+    background: rgba(255, 85, 85, 0.02);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .chat-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 85, 85, 0.1);
+  }
+
+  .send-btn {
+    padding: 12px 24px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    border: none;
+    color: #300;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .send-btn:hover {
+    transform: scale(1.05);
+  }
+
+  .ride-info-banner {
+    background: linear-gradient(90deg, rgba(255, 85, 85, 0.05), rgba(255, 221, 0, 0.05));
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(255, 85, 85, 0.1);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .ride-info-banner .small {
+    color: var(--text);
+  }
+
+  .banner-eta {
+    font-weight: 700;
+    color: var(--accent-1);
+  }
+
+  /* Recent Trips Modal */
+  .trips-modal {
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(255, 59, 48, 0.2);
+    animation: slideUp 0.4s ease;
+    overflow-y: auto;
+  }
+
+  .trips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .trips-title {
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--muted);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  .close-btn:hover {
+    background: rgba(255, 85, 85, 0.1);
+    color: var(--accent-1);
+  }
+
+  .trip-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background: rgba(255, 85, 85, 0.02);
+    border: 1px solid rgba(255, 85, 85, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .trip-item:hover {
+    background: rgba(255, 85, 85, 0.05);
+    border-color: rgba(255, 221, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .trip-info {
+    flex: 1;
+  }
+
+  .trip-route {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .trip-details {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .trip-price {
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent-1);
+  }
+
+  .trip-date {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .empty-trips {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  /* Help Modal */
+  .help-modal {
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    background: var(--panel);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(255, 59, 48, 0.2);
+    animation: slideUp 0.4s ease;
+    overflow-y: auto;
+  }
+
+  .help-section {
+    margin-bottom: 24px;
+  }
+
+  .help-section-title {
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--accent-1);
+  }
+
+  .help-item {
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255, 85, 85, 0.02);
+    border-left: 4px solid var(--accent-1);
+  }
+
+  .help-question {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .help-answer {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .contact-info {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 85, 85, 0.05), rgba(255, 221, 0, 0.03));
+    border: 1px solid rgba(255, 85, 85, 0.1);
+  }
+
+  .contact-method {
+    flex: 1;
+    text-align: center;
+  }
+
+  .contact-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: var(--accent-1);
+  }
+
+  .contact-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .contact-value {
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+  }
+
+  /* Responsive */
+  @media (max-width:980px){
+    body { flex-direction:column; padding:16px; }
+    .sidebar { width:100%; display:flex; flex-direction:row; align-items:center; gap:10px; padding:12px; border-radius:12px; }
+    .panel { width:100%; min-width:unset; }
+    .map-card { flex-direction:column; gap:12px; }
+    .map { min-height:220px; }
+    .message-content { margin: 20px; padding: 30px 20px; }
+    .message-actions { flex-direction: column; }
+    .chat-header { padding: 12px 16px; }
+    .chat-messages { padding: 16px; }
+    .chat-input-container { padding: 12px 16px; }
+    .contact-info { flex-direction: column; gap: 12px; }
+  }
+
+  /* subtle neon outlines on focus */
+  .focus-glow:focus { box-shadow: 0 0 22px rgba(255, 59, 48, 0.12); }
+
+  /* tiny animations */
+  .fade-in { animation: fadeIn .36s ease both; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+</style>
+</head>
+<body class="dark"> <!-- default to dark for the neon look -->
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">GET</div>
+    <div>
+      <h2>GetInTheCar</h2>
+      <div class="small muted">Fast • Hot • Smooth</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="user.html">🚗 Book Ride</a>
+    <a href="myrides.html">🕒 My Rides</a>
+    <a href="#">💳 Payments</a>
+    <a href="#">👤 Profile</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="header">Welcome back, <span style="color:var(--accent-1)">User</span> 👋</div>
+      <div class="small muted">Where are we going today?</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="small-btn" id="myTripsBtn">Recent Trips</button>
+      <button class="btn" id="helpBtn">Help</button>
+    </div>
+  </div>
+
+  <!-- MAP + BOOKING -->
+  <section class="card map-card fade-in" aria-label="Map and booking">
+    <div class="map">
+      <iframe id="mapFrame" src="https://www.google.com/maps?q=UiTM%20Arau&output=embed" loading="lazy" title="map"></iframe>
+      <!-- neon overlay for style -->
+      <div style="position:absolute; right:10px; bottom:10px; padding:8px 10px; border-radius:8px; background: linear-gradient(90deg, rgba(255, 59, 48, 0.45), rgba(255, 221, 0, 0.02)); color:var(--muted); font-size:13px;">
+        Map preview
+      </div>
+    </div>
+
+    <aside class="panel">
+      <div class="card">
+        <h3>Book a Ride</h3>
+
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <button class="btn" onclick="selectBooking('now')">Book Now</button>
+          <button class="small-btn" onclick="selectBooking('later')">Book Later</button>
+        </div>
+
+        <div id="schedulePanel" style="display:none; margin-bottom:8px;">
+          <label>Date</label>
+          <input id="rideDate" class="input focus-glow" type="date">
+          <label>Time</label>
+          <input id="rideTime" class="input focus-glow" type="time">
+        </div>
+
+        <label>Pickup</label>
+        <input id="pickup" class="input focus-glow" placeholder="Enter pickup location (e.g., UiTM Arau)">
+
+        <label>Destination</label>
+        <input id="destination" class="input focus-glow" placeholder="Enter destination (e.g., Arau KTM Station)">
+
+        <div style="margin-top:10px;">
+          <label>Choose Vehicle</label>
+          <div class="vehicle-list" id="vehicleList">
+            <div class="vehicle selected" data-type="car" tabindex="0" onclick="chooseVehicle(this)">
+              <!-- car svg with red/yellow gradient -->
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="6" y="22" width="52" height="18" rx="3" fill="url(#g1)"/>
+                <path d="M8 28h48" stroke="rgba(0,0,0,0.06)" stroke-width="1.2"/>
+                <circle cx="18" cy="44" r="4" fill="#fff" opacity="0.85"/>
+                <circle cx="46" cy="44" r="4" fill="#fff" opacity="0.85"/>
+                <defs>
+                  <linearGradient id="g1" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ff5555"/>
+                    <stop offset="1" stop-color="#ffdd00"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div>
+                <div style="font-weight:700">Car</div>
+                <div class="muted" style="font-size:13px">Comfort • 4 seats</div>
+              </div>
+            </div>
+
+            <div class="vehicle" data-type="motor" tabindex="0" onclick="chooseVehicle(this)">
+              <!-- motor svg with red/yellow gradient -->
+              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 36h22l8-10h12l8 10" fill="url(#g2)"/>
+                <circle cx="20" cy="46" r="5" fill="#fff" opacity="0.95"/>
+                <circle cx="48" cy="46" r="5" fill="#fff" opacity="0.95"/>
+                <defs>
+                  <linearGradient id="g2" x1="0" x2="1">
+                    <stop offset="0" stop-color="#ff5555"/>
+                    <stop offset="1" stop-color="#ffdd00"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div>
+                <div style="font-weight:700">Motor</div>
+                <div class="muted" style="font-size:13px">Fast • 1 passenger</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <div class="estimate" style="flex:1;">
+            <div class="muted">Estimated distance</div>
+            <div class="meter" id="estDistance">— km</div>
+            <div class="muted">Price</div>
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div>
+                <div id="estPrice" style="font-weight:800; font-size:18px">— RM</div>
+                <div class="small muted" id="priceBreak">—</div>
+              </div>
+              <div style="font-size:12px; color:var(--muted)">rates: Car RM1.50/km • Motor RM0.80/km</div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end; width:160px;">
+            <button class="btn" id="requestBtn" onclick="bookRide()">Request Ride</button>
+            <button class="small-btn" onclick="simulateDriver()">Simulate Driver</button>
+          </div>
+        </div>
+
+        <div id="rideStatus" class="small muted" style="margin-top:10px">Enter pickup & destination for estimate.</div>
+      </div>
+
+      <div class="card">
+        <h3>Recent Trips</h3>
+        <div class="trips" id="tripList">
+          <div class="trip muted">No recent trips yet.</div>
+        </div>
+      </div>
+
+      <div class="card small muted">
+        Tip: Estimates are generated locally (deterministic) — same input → same estimate. Use real distances with map APIs for production.
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+<!-- Driver Selection Modal -->
+<div id="driverModal" class="modal-overlay" style="display:none;">
+  <div class="driver-modal card">
+    <h3>Select a Driver</h3>
+    <div class="small muted">Choose from available drivers nearby</div>
+    
+    <div class="driver-list" id="driverList">
+      <!-- Driver cards will be inserted here -->
+    </div>
+    
+    <div class="modal-actions">
+      <button class="small-btn" id="cancelDriverBtn">Cancel</button>
+      <button class="btn" id="confirmDriverBtn" disabled>Confirm Driver</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Screen -->
+<div id="loadingScreen" class="loading-screen" style="display:none;">
+  <div class="loading-content">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Connecting with Driver</div>
+    <div class="loading-subtext" id="loadingSubtext">Please wait while we connect you with your driver...</div>
+    <div class="small muted">This usually takes 2-3 seconds</div>
+  </div>
+</div>
+
+<!-- Message Page -->
+<div id="messageScreen" class="message-screen" style="display:none;">
+  <div class="message-content">
+    <div class="message-icon">✓</div>
+    <div class="message-title">Ride Confirmed!</div>
+    <div class="small muted">Your driver is on the way to your pickup location</div>
+    
+    <div class="message-details">
+      <div class="detail-item">
+        <span class="muted">Driver:</span>
+        <span class="driver-name-display" id="driverNameDisplay"></span>
+      </div>
+      <div class="detail-item">
+        <span class="muted">Vehicle:</span>
+        <span id="vehicleDisplay"></span>
+      </div>
+      <div class="detail-item">
+        <span class="muted">Estimated Arrival:</span>
+        <span id="etaDisplay"></span>
+      </div>
+      <div class="detail-item">
+        <span class="muted">Pickup:</span>
+        <span id="pickupDisplay"></span>
+      </div>
+      <div class="detail-item">
+        <span class="muted">Destination:</span>
+        <span id="destinationDisplay"></span>
+      </div>
+      <div class="detail-item">
+        <span class="muted">Total Fare:</span>
+        <span class="fare-display" id="fareDisplay"></span>
+      </div>
+    </div>
+    
+    <div class="message-actions">
+      <button class="small-btn" onclick="goToHome()">Back to Home</button>
+      <button class="btn" onclick="openChatPage()">Chat Driver</button>
+    </div>
+    
+    <div class="small muted" style="margin-top:20px;">
+      Your driver's contact details have been sent to your phone number
+    </div>
+  </div>
+</div>
+
+<!-- Chat Page -->
+<div id="chatPage" class="chat-page" style="display:none;">
+  <div class="chat-header">
+    <button class="back-btn" onclick="closeChatPage()">←</button>
+    <div class="driver-avatar" id="chatDriverAvatar">A</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name" id="chatDriverName">Driver Name</div>
+      <div class="chat-header-status">Active now • ETA: <span id="chatEtaDisplay">3 min</span></div>
+    </div>
+  </div>
+  
+  <div class="ride-info-banner">
+    <div>
+      <span class="small">From <strong id="chatPickupDisplay">UiTM Arau</strong> to <strong id="chatDestinationDisplay">Arau KTM Station</strong></span>
+    </div>
+    <div>
+      <span class="small">ETA: <span class="banner-eta" id="chatEtaBanner">3 min</span></span>
+    </div>
+  </div>
+  
+  <div class="chat-messages-container">
+    <div class="chat-messages" id="chatMessages">
+      <!-- Messages will be dynamically added here -->
+    </div>
+  </div>
+  
+  <div class="chat-input-container">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message here..." onkeypress="handleChatKeypress(event)">
+    <button class="send-btn" onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<!-- Recent Trips Modal -->
+<div id="tripsModal" class="modal-overlay" style="display:none;">
+  <div class="trips-modal">
+    <div class="trips-header">
+      <div class="trips-title">Recent Trips</div>
+      <button class="close-btn" onclick="closeTripsModal()">×</button>
+    </div>
+    <div id="tripsModalContent">
+      <!-- Trips will be dynamically inserted here -->
+    </div>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="modal-overlay" style="display:none;">
+  <div class="help-modal">
+    <div class="trips-header">
+      <div class="trips-title">Help & Support</div>
+      <button class="close-btn" onclick="closeHelpModal()">×</button>
+    </div>
+    
+    <div class="help-section">
+      <div class="help-section-title">🚗 Booking Rides</div>
+      <div class="help-item">
+        <div class="help-question">How do I book a ride?</div>
+        <div class="help-answer">Enter your pickup and destination locations, select vehicle type, then click "Request Ride". You'll be matched with available drivers.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">Can I schedule a ride for later?</div>
+        <div class="help-answer">Yes! Click "Book Later" and select your desired date and time. Your ride will be scheduled accordingly.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">How are prices calculated?</div>
+        <div class="help-answer">Prices are based on distance, vehicle type, and base fare. Cars: RM1.50/km + RM3.00 base. Motor: RM0.80/km + RM2.00 base.</div>
+      </div>
+    </div>
+    
+    <div class="help-section">
+      <div class="help-section-title">💳 Payments & Refunds</div>
+      <div class="help-item">
+        <div class="help-question">What payment methods are accepted?</div>
+        <div class="help-answer">We accept cash, credit/debit cards, and major e-wallets (Touch 'n Go, GrabPay, Boost).</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">How do I get a refund?</div>
+        <div class="help-answer">Refunds are processed within 3-5 business days. Contact support with your trip details for assistance.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">Is there a cancellation fee?</div>
+        <div class="help-answer">Cancellation fees apply if you cancel after a driver has been assigned. Fees vary based on wait time.</div>
+      </div>
+    </div>
+    
+    <div class="help-section">
+      <div class="help-section-title">👤 Account & Safety</div>
+      <div class="help-item">
+        <div class="help-question">How do I update my profile?</div>
+        <div class="help-answer">Go to Profile section to update your personal details, payment methods, and preferences.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">What safety features are available?</div>
+        <div class="help-answer">We provide ride tracking, driver verification, SOS button, and 24/7 emergency support.</div>
+      </div>
+      <div class="help-item">
+        <div class="help-question">How do I report an issue?</div>
+        <div class="help-answer">Use the "Report Issue" button in the app or contact our support team directly.</div>
+      </div>
+    </div>
+    
+    <div class="contact-info">
+      <div class="contact-method">
+        <div class="contact-icon">📧</div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value">support@getinthecar.com</div>
+      </div>
+      <div class="contact-method">
+        <div class="contact-icon">📞</div>
+        <div class="contact-label">Phone</div>
+        <div class="contact-value">1-800-88-1234</div>
+      </div>
+      <div class="contact-method">
+        <div class="contact-icon">💬</div>
+        <div class="contact-label">Live Chat</div>
+        <div class="contact-value">Available 24/7</div>
+      </div>
+    </div>
+    
+    <div class="small muted" style="margin-top: 20px; text-align: center;">
+      Average response time: 15 minutes
+    </div>
+  </div>
+</div>
+
+<!-- JS (estimator + UI) -->
+<script>
+  /* Theme toggle logic (neon) */
+  const body = document.body;
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    const knob = darkSwitch.querySelector('.knob');
+    darkSwitch.classList.toggle('dark-toggle-on');
+    body.classList.toggle('dark');
+    // small visual: move knob
+    if (body.classList.contains('dark')) {
+      knob.style.left = '25px';
+      knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+    } else {
+      knob.style.left = '3px';
+      knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+    }
+  });
+
+  /* Booking type toggles */
+  function selectBooking(type) {
+    const schedule = document.getElementById('schedulePanel');
+    schedule.style.display = (type === 'later') ? 'block' : 'none';
+  }
+
+  /* Vehicle selection */
+  let selectedVehicle = 'car';
+  function chooseVehicle(el){
+    document.querySelectorAll('.vehicle').forEach(v => v.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedVehicle = el.dataset.type;
+    computeEstimate();
+  }
+
+  // inputs and map update
+  const pickupInput = document.getElementById('pickup');
+  const destInput = document.getElementById('destination');
+  const mapFrame = document.getElementById('mapFrame');
+
+  pickupInput.addEventListener('input', updateMapAndEstimate);
+  destInput.addEventListener('input', updateMapAndEstimate);
+
+  function updateMapAndEstimate(){
+    const pickup = pickupInput.value || 'UiTM Arau';
+    const dest = destInput.value || '';
+    let query = pickup;
+    if (dest) query += ' to ' + dest;
+    mapFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+    computeEstimate();
+  }
+
+  /* Deterministic distance estimator (hash strings -> km)
+     Produces consistent distances for same pickup+dest without external API.
+     Range roughly 1.0 — 22.0 km
+  */
+  function deterministicDistance(a, b){
+    if(!a || !b) return null;
+    const s = (a.trim().toLowerCase() + '|' + b.trim().toLowerCase());
+    // simple hash
+    let h = 0;
+    for (let i=0;i<s.length;i++){
+      h = (h * 31 + s.charCodeAt(i)) >>> 0; // unsigned
+    }
+    // map to 1 — 22 km
+    const km = 1 + (h % 210) / 10; // 1.0 to ~22.0
+    return Math.round(km * 10) / 10; // one decimal
+  }
+
+  /* Pricing rules */
+  const rates = {
+    car: { per_km: 1.50, base: 3.00, min_fare: 4.50 },
+    motor: { per_km: 0.80, base: 2.00, min_fare: 3.00 }
+  };
+
+  function computeEstimate(){
+    const pickup = pickupInput.value.trim();
+    const dest = destInput.value.trim();
+    const estDistanceEl = document.getElementById('estDistance');
+    const estPriceEl = document.getElementById('estPrice');
+    const priceBreakEl = document.getElementById('priceBreak');
+    const rideStatus = document.getElementById('rideStatus');
+
+    if(!pickup || !dest){
+      estDistanceEl.innerText = '— km';
+      estPriceEl.innerText = '— RM';
+      priceBreakEl.innerText = 'Fill pickup & destination';
+      rideStatus.innerText = 'Enter pickup & destination for estimate.';
+      return;
+    }
+
+    const km = deterministicDistance(pickup, dest);
+    const rate = rates[selectedVehicle];
+    const subtotal = Number((km * rate.per_km).toFixed(2));
+    const fare = Math.max(subtotal + rate.base, rate.min_fare);
+    estDistanceEl.innerText = km.toFixed(1) + ' km';
+    estPriceEl.innerText = fare.toFixed(2) + ' RM';
+    priceBreakEl.innerText = `Base ${rate.base.toFixed(2)} + ${rate.per_km.toFixed(2)}/km × ${km.toFixed(1)} = ${subtotal.toFixed(2)}`;
+    rideStatus.innerText = 'Estimate ready — press Request Ride to book.';
+  }
+
+  /* Driver selection */
+  let selectedDriver = null;
+  let currentRideDetails = null;
+  
+  function showDriverSelection() {
+    const modal = document.getElementById('driverModal');
+    const driverList = document.getElementById('driverList');
+    const confirmBtn = document.getElementById('confirmDriverBtn');
+    
+    // Clear previous driver list
+    driverList.innerHTML = '';
+    
+    // Calculate base fare
+    const pickup = pickupInput.value.trim();
+    const dest = destInput.value.trim();
+    const km = deterministicDistance(pickup, dest);
+    const rate = rates[selectedVehicle];
+    const subtotal = Number((km * rate.per_km).toFixed(2));
+    const baseFare = Math.max(subtotal + rate.base, rate.min_fare);
+    
+    // Store ride details
+    currentRideDetails = {
+      pickup,
+      destination: dest,
+      distance: km,
+      vehicle: selectedVehicle,
+      baseFare
+    };
+    
+    // Generate 3 drivers with random details
+    const drivers = [
+      {
+        id: 1,
+        name: 'Yaseer Yahaya',
+        rating: 4.8,
+        trips: 1247,
+        eta: '3 min',
+        vehicle: selectedVehicle === 'car' ? 'Myvi (AKM 7110)' : 'Yamaha Y15 (VJD 5734)',
+        priceMultiplier: 1.0
+      },
+      {
+        id: 2,
+        name: 'Masturina Balqis',
+        rating: 4.9,
+        trips: 892,
+        eta: '5 min',
+        vehicle: selectedVehicle === 'car' ? 'Proton Persona (CCU 2781)' : 'Honda RS150  (PMW 5214)',
+        priceMultiplier: 1.1
+      },
+      {
+        id: 3,
+        name: 'Aiman Iskandar',
+        rating: 4.7,
+        trips: 1563,
+        eta: '7 min',
+        vehicle: selectedVehicle === 'car' ? 'Perodua Axia ALD 8794)' : 'SYM VF3i (2549)',
+        priceMultiplier: 0.9
+      }
+    ];
+    
+    // Create driver cards
+    drivers.forEach(driver => {
+      const driverCard = document.createElement('div');
+      driverCard.className = 'driver-card';
+      driverCard.dataset.id = driver.id;
+      
+      const finalPrice = (baseFare * driver.priceMultiplier).toFixed(2);
+      
+      driverCard.innerHTML = `
+        <div class="driver-avatar">${driver.name.charAt(0)}</div>
+        <div class="driver-info">
+          <div class="driver-name">${driver.name}</div>
+          <div class="driver-rating">
+            <span class="stars">★★★★★</span>
+            <span>${driver.rating} (${driver.trips} trips)</span>
+          </div>
+          <div class="driver-details">
+            <span>${driver.vehicle}</span>
+            <span>ETA: ${driver.eta}</span>
+          </div>
+        </div>
+        <div class="driver-price">${finalPrice} RM</div>
+      `;
+      
+      driverCard.addEventListener('click', () => {
+        // Deselect all drivers
+        document.querySelectorAll('.driver-card').forEach(card => {
+          card.classList.remove('selected');
+        });
+        
+        // Select this driver
+        driverCard.classList.add('selected');
+        selectedDriver = {
+          ...driver,
+          finalPrice
+        };
+        confirmBtn.disabled = false;
+      });
+      
+      driverList.appendChild(driverCard);
+    });
+    
+    // Show modal
+    modal.style.display = 'flex';
+    
+    // Set up event listeners for modal buttons
+    document.getElementById('cancelDriverBtn').onclick = () => {
+      modal.style.display = 'none';
+      selectedDriver = null;
+      currentRideDetails = null;
+    };
+    
+    document.getElementById('confirmDriverBtn').onclick = () => {
+      if (selectedDriver) {
+        modal.style.display = 'none';
+        showLoadingScreen(selectedDriver);
+      }
+    };
+  }
+  
+  function showLoadingScreen(driver) {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingSubtext = document.getElementById('loadingSubtext');
+    
+    loadingSubtext.textContent = `Connecting with ${driver.name}...`;
+    loadingScreen.style.display = 'flex';
+    
+    // Simulate connection process
+    setTimeout(() => {
+      loadingSubtext.textContent = 'Confirming ride details...';
+    }, 1000);
+    
+    setTimeout(() => {
+      loadingSubtext.textContent = 'Finalizing booking...';
+    }, 2000);
+    
+    // After 3 seconds, show message page
+    setTimeout(() => {
+      loadingScreen.style.display = 'none';
+      showMessagePage(driver);
+    }, 3000);
+  }
+  
+  function showMessagePage(driver) {
+    const messageScreen = document.getElementById('messageScreen');
+    const driverNameDisplay = document.getElementById('driverNameDisplay');
+    const vehicleDisplay = document.getElementById('vehicleDisplay');
+    const etaDisplay = document.getElementById('etaDisplay');
+    const pickupDisplay = document.getElementById('pickupDisplay');
+    const destinationDisplay = document.getElementById('destinationDisplay');
+    const fareDisplay = document.getElementById('fareDisplay');
+    
+    // Update message page with details
+    driverNameDisplay.textContent = driver.name;
+    vehicleDisplay.textContent = driver.vehicle;
+    etaDisplay.textContent = driver.eta;
+    pickupDisplay.textContent = currentRideDetails.pickup;
+    destinationDisplay.textContent = currentRideDetails.destination;
+    fareDisplay.textContent = driver.finalPrice + ' RM';
+    
+    // Show message page
+    messageScreen.style.display = 'flex';
+    
+    // Add to recent trips
+    addToRecentTrips(driver);
+  }
+  
+  function addToRecentTrips(driver) {
+    const tripList = document.getElementById('tripList');
+    
+    const item = document.createElement('div');
+    item.className = 'trip';
+    item.innerHTML = `
+      <div>
+        <strong>${currentRideDetails.pickup}</strong> → <strong>${currentRideDetails.destination}</strong>
+        <div class="small muted">${currentRideDetails.vehicle.toUpperCase()} • ${driver.name} • ${currentRideDetails.distance.toFixed(1)} km</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:800">${driver.finalPrice} RM</div>
+        <div class="small muted">Now</div>
+      </div>
+    `;
+    
+    // Remove default message if present
+    if (tripList.querySelector('.muted') && tripList.children.length === 1) {
+      tripList.innerHTML = '';
+    }
+    
+    tripList.prepend(item);
+  }
+  
+  function goToHome() {
+    const messageScreen = document.getElementById('messageScreen');
+    messageScreen.style.display = 'none';
+    
+    // Reset form
+    document.getElementById('pickup').value = '';
+    document.getElementById('destination').value = '';
+    
+    // Reset status
+    const rideStatus = document.getElementById('rideStatus');
+    rideStatus.textContent = 'Enter pickup & destination for estimate.';
+    
+    // Reset estimates
+    computeEstimate();
+  }
+  
+  /* Chat Page functionality */
+  function openChatPage() {
+    const messageScreen = document.getElementById('messageScreen');
+    const chatPage = document.getElementById('chatPage');
+    const chatDriverName = document.getElementById('chatDriverName');
+    const chatDriverAvatar = document.getElementById('chatDriverAvatar');
+    const chatEtaDisplay = document.getElementById('chatEtaDisplay');
+    const chatEtaBanner = document.getElementById('chatEtaBanner');
+    const chatPickupDisplay = document.getElementById('chatPickupDisplay');
+    const chatDestinationDisplay = document.getElementById('chatDestinationDisplay');
+    const chatMessages = document.getElementById('chatMessages');
+    
+    // Hide message screen
+    messageScreen.style.display = 'none';
+    
+    // Update chat page with details
+    chatDriverName.textContent = selectedDriver.name;
+    chatDriverAvatar.textContent = selectedDriver.name.charAt(0);
+    chatEtaDisplay.textContent = selectedDriver.eta;
+    chatEtaBanner.textContent = selectedDriver.eta;
+    chatPickupDisplay.textContent = currentRideDetails.pickup;
+    chatDestinationDisplay.textContent = currentRideDetails.destination;
+    
+    // Clear previous messages
+    chatMessages.innerHTML = '';
+    
+    // Add initial messages
+    const initialMessages = [
+      {
+        text: `Hi! I'm ${selectedDriver.name}. I'll be your driver today. I'm on my way to ${currentRideDetails.pickup}. ETA ${selectedDriver.eta}.`,
+        sender: 'driver',
+        time: 'Just now'
+      },
+      {
+        text: `I'm driving a ${selectedDriver.vehicle}. I'll notify you when I arrive.`,
+        sender: 'driver',
+        time: 'Just now'
+      }
+    ];
+    
+    initialMessages.forEach(msg => {
+      addMessageToChat(msg.text, msg.sender, msg.time);
+    });
+    
+    // Show chat page
+    chatPage.style.display = 'flex';
+    
+    // Hide sidebar and main content
+    document.querySelector('.sidebar').style.display = 'none';
+    document.querySelector('.main').style.display = 'none';
+  }
+  
+  function closeChatPage() {
+    const chatPage = document.getElementById('chatPage');
+    
+    // Hide chat page
+    chatPage.style.display = 'none';
+    
+    // Show sidebar and main content
+    document.querySelector('.sidebar').style.display = 'flex';
+    document.querySelector('.main').style.display = 'flex';
+    
+    // Show message screen again
+    document.getElementById('messageScreen').style.display = 'flex';
+  }
+  
+  function addMessageToChat(text, sender, time) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender === 'driver' ? 'received' : 'sent'}`;
+    
+    messageDiv.innerHTML = `
+      <div class="message-text">${text}</div>
+      <div class="message-time">${time}</div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  
+  function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const message = chatInput.value.trim();
+    
+    if (message) {
+      // Add user message
+      addMessageToChat(message, 'user', 'Just now');
+      
+      // Clear input
+      chatInput.value = '';
+      
+      // Simulate driver response after delay
+      setTimeout(() => {
+        const responses = [
+          "I'll be there in about 5 minutes.",
+          "Please wait at the pickup point.",
+          "I'm wearing a red shirt.",
+          "The car has NeonHail stickers on the doors.",
+          "Traffic is light, I'm making good time.",
+          "You can pay by cash or card when we arrive.",
+          "I'm just around the corner.",
+          "Please have your payment ready.",
+          "I've arrived at the pickup location.",
+          "I'll wait for 5 minutes at the pickup point."
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        addMessageToChat(randomResponse, 'driver', 'Just now');
+      }, 1000 + Math.random() * 2000);
+    }
+  }
+  
+  function handleChatKeypress(event) {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  }
+
+  /* Booking flow */
+  function bookRide(){
+    const pickup = pickupInput.value.trim();
+    const dest = destInput.value.trim();
+    const rideStatus = document.getElementById('rideStatus');
+
+    if(!pickup || !dest){
+      rideStatus.style.color = '#ff6b6b';
+      rideStatus.innerText = 'Please fill pickup and destination.';
+      return;
+    }
+
+    // Show driver selection instead of directly booking
+    showDriverSelection();
+  }
+
+  /* simulate driver button */
+  function simulateDriver(){
+    const rideStatus = document.getElementById('rideStatus');
+    rideStatus.style.color = '';
+    rideStatus.innerText = 'Simulating driver ping...';
+    setTimeout(()=> {
+      rideStatus.innerHTML = `<span style="color:var(--accent-1)">Driver nearby</span> — 3 min away`;
+    },900);
+  }
+
+  /* Recent Trips Modal */
+  function showTripsModal() {
+    const modal = document.getElementById('tripsModal');
+    const content = document.getElementById('tripsModalContent');
+    
+    // Get trips from the recent trips section
+    const tripList = document.getElementById('tripList');
+    const trips = tripList.querySelectorAll('.trip:not(.muted)');
+    
+    if (trips.length === 0) {
+      content.innerHTML = `
+        <div class="empty-trips">
+          <div class="empty-icon">🚗</div>
+          <h3>No Recent Trips</h3>
+          <p class="small muted">You haven't taken any rides yet.</p>
+          <button class="btn" onclick="closeTripsModal(); bookRide();" style="margin-top: 16px;">Book Your First Ride</button>
+        </div>
+      `;
+    } else {
+      let tripsHTML = '';
+      
+      // Sample trips data (in a real app, this would come from backend)
+      const sampleTrips = [
+        {
+          from: "UiTM Arau",
+          to: "Arau KTM Station",
+          date: "Today, 9:30 AM",
+          price: "8.50 RM",
+          driver: "Yaseer Yahaya",
+          vehicle: "Car",
+          distance: "3.2 km"
+        },
+        {
+          from: "Kangar Bus Station",
+          to: "Pusat Bandar Kangar",
+          date: "Yesterday, 2:15 PM",
+          price: "6.80 RM",
+          driver: "Masturina Balqis",
+          vehicle: "Motor",
+          distance: "5.8 km"
+        },
+        {
+          from: "Home",
+          to: "UiTM Arau",
+          date: "Dec 10, 9:15 AM",
+          price: "12.30 RM",
+          driver: "Aiman Iskandar",
+          vehicle: "Car",
+          distance: "7.5 km"
+        },
+        {
+          from: "Arau Mall",
+          to: "Train Station",
+          date: "Dec 8, 6:45 PM",
+          price: "3.70 RM",
+          driver: "Lim W.",
+          vehicle: "Motor",
+          distance: "2.1 km"
+        }
+      ];
+      
+      sampleTrips.forEach((trip, index) => {
+        tripsHTML += `
+          <div class="trip-item fade-in" style="animation-delay: ${index * 0.1}s">
+            <div class="trip-info">
+              <div class="trip-route">
+                <span style="color: var(--accent-1)">${trip.from}</span> → 
+                <span style="color: var(--accent-2)">${trip.to}</span>
+              </div>
+              <div class="trip-details">
+                <span>${trip.vehicle} • ${trip.driver}</span>
+                <span>${trip.distance}</span>
+              </div>
+              <div class="trip-date">${trip.date}</div>
+            </div>
+            <div>
+              <div class="trip-price">${trip.price}</div>
+            </div>
+          </div>
+        `;
+      });
+      
+      content.innerHTML = tripsHTML;
+    }
+    
+    modal.style.display = 'flex';
+  }
+
+  function closeTripsModal() {
+    document.getElementById('tripsModal').style.display = 'none';
+  }
+
+  /* Help Modal */
+  function showHelpModal() {
+    document.getElementById('helpModal').style.display = 'flex';
+  }
+
+  function closeHelpModal() {
+    document.getElementById('helpModal').style.display = 'none';
+  }
+
+  // Close modals when clicking outside
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      closeTripsModal();
+      closeHelpModal();
+      document.getElementById('driverModal').style.display = 'none';
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeTripsModal();
+      closeHelpModal();
+      document.getElementById('driverModal').style.display = 'none';
+    }
+  });
+
+  // wire events
+  document.getElementById('requestBtn').addEventListener('click', bookRide);
+  document.getElementById('myTripsBtn').addEventListener('click', showTripsModal);
+  document.getElementById('helpBtn').addEventListener('click', showHelpModal);
+
+  // keyboard accessibility for vehicle selection
+  document.querySelectorAll('.vehicle').forEach(v=>{
+    v.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' ') { chooseVehicle(v); e.preventDefault(); }
+    });
+  });
+
+  // initial compute (if default inputs present)
+  computeEstimate();
+</script>
+</body>
+</html>

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GetInTheCar — Login</title>
+<style>
+  /* Combined CSS for login page - all styles included here */
+  :root {
+    --accent-1: #ff3b30;
+    --accent-2: #ffdd00;
+    --muted: #888;
+    --text: #fff;
+    --bg: #0f0f0f;
+    --card-bg: rgba(25, 25, 25, 0.9);
+    --border: rgba(255, 255, 255, 0.1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Login container styles */
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.9), rgba(26, 0, 34, 0.9));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 80%, rgba(255, 59, 48, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 221, 0, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(155, 81, 224, 0.1) 0%, transparent 50%);
+    z-index: 0;
+  }
+
+  .login-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    background: rgba(15, 15, 15, 0.95);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    box-shadow: 
+      0 20px 60px rgba(255, 59, 48, 0.15),
+      0 0 0 1px rgba(255, 221, 0, 0.1) inset;
+    backdrop-filter: blur(10px);
+    animation: cardAppear 0.6s ease-out;
+  }
+
+  @keyframes cardAppear {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .login-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .login-logo {
+    font-size: 48px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ff3b30, #ffdd00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .login-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .input-group {
+    position: relative;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 16px 20px;
+    padding-left: 48px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .login-input:focus {
+    outline: none;
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .login-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 20px;
+  }
+
+  .remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    cursor: pointer;
+    appearance: none;
+    position: relative;
+  }
+
+  .checkbox-group input[type="checkbox"]:checked {
+    background: linear-gradient(90deg, #ff3b30, #ffdd00);
+    border-color: transparent;
+  }
+
+  .checkbox-group input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: black;
+    font-weight: bold;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+
+  .forgot-password {
+    color: var(--accent-1);
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .forgot-password:hover {
+    color: #ffdd00;
+    text-decoration: underline;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(90deg, #ff3b30, #ffdd00);
+    color: black;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 59, 48, 0.4);
+  }
+
+  .login-btn:active {
+    transform: translateY(0);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .divider span {
+    padding: 0 15px;
+  }
+
+  .social-login {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+
+  .social-btn {
+    padding: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .social-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .signup-link {
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 30px;
+  }
+
+  .signup-link a {
+    color: var(--accent-1);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+  }
+
+  .signup-link a:hover {
+    text-decoration: underline;
+  }
+
+  .demo-credentials {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent-1);
+  }
+
+  .demo-title {
+    color: var(--accent-1);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .demo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .demo-item:last-child {
+    border-bottom: none;
+  }
+
+  .demo-label {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .demo-value {
+    color: white;
+    font-size: 12px;
+    font-family: monospace;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .demo-value:hover {
+    background: rgba(255, 59, 48, 0.2);
+  }
+
+  .error-message {
+    color: #ff6b6b;
+    font-size: 14px;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .error-message.show {
+    display: block;
+  }
+
+  .floating-animation {
+    position: absolute;
+    font-size: 24px;
+    opacity: 0.1;
+    animation: float 20s infinite linear;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 0.1;
+    }
+    50% {
+      opacity: 0.2;
+    }
+    100% {
+      transform: translateY(-1000px) rotate(360deg);
+      opacity: 0.1;
+    }
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .forgot-modal,
+  .signup-modal {
+    max-width: 400px;
+    width: 90%;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .trips-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .trips-title {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 28px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+  }
+
+  .btn {
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 59, 48, 0.3);
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .input:focus {
+    outline: none;
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.3);
+  }
+
+  .small {
+    font-size: 14px;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Responsive styles */
+  @media (max-width: 480px) {
+    .login-card {
+      padding: 30px 20px;
+      margin: 20px;
+    }
+
+    .login-logo {
+      font-size: 36px;
+    }
+
+    .social-login {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .remember-forgot {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .forgot-modal,
+    .signup-modal {
+      width: 95%;
+      padding: 20px;
+    }
+
+    .trips-title {
+      font-size: 20px;
+    }
+  }
+
+  /* User role indicator */
+  .user-role {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 8px;
+  }
+
+  .role-passenger {
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    color: white;
+  }
+
+  .role-driver {
+    background: linear-gradient(90deg, #2196F3, #03A9F4);
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <!-- Floating animation elements -->
+  <div class="floating-animation" style="left: 10%; animation-delay: 0s;">🚗</div>
+  <div class="floating-animation" style="left: 20%; animation-delay: 2s;">📍</div>
+  <div class="floating-animation" style="left: 85%; animation-delay: 4s;">💳</div>
+  <div class="floating-animation" style="left: 70%; animation-delay: 6s;">👤</div>
+  <div class="floating-animation" style="left: 50%; animation-delay: 8s;">🕒</div>
+  <div class="floating-animation" style="left: 30%; animation-delay: 10s;">🌟</div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo">GETINTHE<span style="background: linear-gradient(90deg, #ffdd00, #ff3b30); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">CAR</span></div>
+      <div class="login-subtitle">Your University E-Hailing Service</div>
+    </div>
+
+    <form class="login-form" id="loginForm">
+      <div class="input-group">
+        <span class="input-icon">👤</span>
+        <input type="text" class="login-input" id="username" placeholder="Email or Student ID" required autocomplete="off">
+        <div class="error-message" id="usernameError"></div>
+      </div>
+
+      <div class="input-group">
+        <span class="input-icon">🔒</span>
+        <input type="password" class="login-input" id="password" placeholder="Password" required autocomplete="off">
+        <div class="error-message" id="passwordError"></div>
+      </div>
+
+      <div class="remember-forgot">
+        <label class="checkbox-group">
+          <input type="checkbox" id="rememberMe" autocomplete="off">
+          <span class="checkbox-label">Remember me</span>
+        </label>
+        <a href="#" class="forgot-password" onclick="showForgotPassword()">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="login-btn">
+        <span id="loginBtnText">Login to GetInTheCar</span>
+        <span id="loginLoading" style="display: none;">⌛ Loading...</span>
+      </button>
+
+      <div class="divider">
+        <span>or continue with</span>
+      </div>
+
+      <div class="social-login">
+        <button type="button" class="social-btn" onclick="socialLogin('google')">
+          <span>G</span>
+        </button>
+        <button type="button" class="social-btn" onclick="socialLogin('facebook')">
+          <span>f</span>
+        </button>
+        <button type="button" class="social-btn" onclick="socialLogin('microsoft')">
+          <span>M</span>
+        </button>
+      </div>
+
+      <div class="demo-credentials">
+        <div class="demo-title">Demo Accounts (Click to copy)</div>
+        <div class="demo-item">
+          <span class="demo-label">Passenger:</span>
+          <span class="demo-value" onclick="copyToClipboard('2025161705')">2025161705 <span class="user-role role-passenger">Passenger</span></span>
+        </div>
+        <div class="demo-item">
+          <span class="demo-label">Password:</span>
+          <span class="demo-value" onclick="copyToClipboard('alifmukhlis')">alifmukhlis</span>
+        </div>
+        <div class="demo-item">
+          <span class="demo-label">Driver:</span>
+          <span class="demo-value" onclick="copyToClipboard('2025161704')">2025161704 <span class="user-role role-driver">Driver</span></span>
+        </div>
+        <div class="demo-item">
+          <span class="demo-label">Password:</span>
+          <span class="demo-value" onclick="copyToClipboard('harithyusri')">harithyusri</span>
+        </div>
+      </div>
+
+      <div class="signup-link">
+        New to GetInTheCar?
+        <a href="#" onclick="showSignup()">Create Account</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="modal-overlay" style="display:none;">
+  <div class="forgot-modal card">
+    <div class="trips-header">
+      <div class="trips-title">Reset Password</div>
+      <button class="close-btn" onclick="closeForgotPassword()">×</button>
+    </div>
+    <div style="padding: 20px;">
+      <div class="small muted" style="margin-bottom: 20px;">
+        Enter your email address and we'll send you a link to reset your password.
+      </div>
+      <input type="email" class="input" id="resetEmail" placeholder="Enter your email" style="width: 100%; margin-bottom: 20px;" autocomplete="off">
+      <button class="btn" onclick="sendResetLink()">Send Reset Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signupModal" class="modal-overlay" style="display:none;">
+  <div class="signup-modal card">
+    <div class="trips-header">
+      <div class="trips-title">Create Account</div>
+      <button class="close-btn" onclick="closeSignup()">×</button>
+    </div>
+    <div style="padding: 20px;">
+      <div class="small muted" style="margin-bottom: 20px;">
+        Choose your account type:
+      </div>
+      
+      <div style="display: flex; gap: 10px; margin-bottom: 30px;">
+        <button class="btn" style="flex: 1;" onclick="selectAccountType('passenger')">🎓 Passenger</button>
+        <button class="btn" style="flex: 1;" onclick="selectAccountType('driver')">🚗 Driver</button>
+      </div>
+
+      <div id="signupForm" style="display: none;">
+        <input type="text" class="input" id="signupName" placeholder="Full Name" style="width: 100%; margin-bottom: 10px;" autocomplete="off">
+        <input type="email" class="input" id="signupEmail" placeholder="Email Address" style="width: 100%; margin-bottom: 10px;" autocomplete="off">
+        <input type="text" class="input" id="signupStudentId" placeholder="Student ID" style="width: 100%; margin-bottom: 10px;" autocomplete="off">
+        <input type="password" class="input" id="signupPassword" placeholder="Password" style="width: 100%; margin-bottom: 10px;" autocomplete="off">
+        <input type="password" class="input" id="signupConfirmPassword" placeholder="Confirm Password" style="width: 100%; margin-bottom: 20px;" autocomplete="off">
+        <button class="btn" onclick="createAccount()">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Define user credentials with roles and redirect URLs
+  const userCredentials = [
+    // Passenger account
+    {
+      username: '2025161705',
+      password: 'alifmukhlis',
+      name: 'Alif Mukhlis',
+      email: '2025161705@student.uitm.edu.my',
+      role: 'passenger',
+      redirect: 'user.html'
+    },
+    // Driver account  
+    {
+      username: '2025161704',
+      password: 'harithyusri',
+      name: 'Harith Yusri',
+      email: '2025161704@driver.getinthecar.com',
+      role: 'driver',
+      redirect: 'driver.html'
+    },
+    // Alternative formats
+    {
+      username: 'alifmukhlis@student.uitm.edu.my',
+      password: 'alifmukhlis',
+      name: 'Alif Mukhlis',
+      email: 'alifmukhlis@student.uitm.edu.my',
+      role: 'passenger',
+      redirect: 'user.html'
+    },
+    {
+      username: 'harithyusri@driver.getinthecar.com',
+      password: 'harithyusri',
+      name: 'Harith Yusri',
+      email: 'harithyusri@driver.getinthecar.com',
+      role: 'driver',
+      redirect: 'driver.html'
+    }
+  ];
+
+  // Form submission handler
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    login();
+  });
+
+  // Login function
+  function login() {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
+    
+    // Reset errors
+    document.getElementById('usernameError').classList.remove('show');
+    document.getElementById('passwordError').classList.remove('show');
+    
+    // Validate inputs
+    let isValid = true;
+    
+    if (!username) {
+      document.getElementById('usernameError').textContent = 'Please enter your email or student ID';
+      document.getElementById('usernameError').classList.add('show');
+      isValid = false;
+    }
+    
+    if (!password) {
+      document.getElementById('passwordError').textContent = 'Please enter your password';
+      document.getElementById('passwordError').classList.add('show');
+      isValid = false;
+    } else if (password.length < 6) {
+      document.getElementById('passwordError').textContent = 'Password must be at least 6 characters';
+      document.getElementById('passwordError').classList.add('show');
+      isValid = false;
+    }
+    
+    if (!isValid) return;
+    
+    // Show loading state
+    const loginBtnText = document.getElementById('loginBtnText');
+    const loginLoading = document.getElementById('loginLoading');
+    loginBtnText.style.display = 'none';
+    loginLoading.style.display = 'inline';
+    
+    // Disable form while loading
+    const submitBtn = document.querySelector('.login-btn');
+    submitBtn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+      // Find matching credentials
+      const user = userCredentials.find(cred => 
+        (cred.username === username || 
+         cred.email === username ||
+         cred.username.toLowerCase() === username.toLowerCase()) && 
+        cred.password === password
+      );
+      
+      if (user) {
+        // Store user data (but only for current session)
+        const userData = {
+          username: user.username,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        };
+        
+        // Store in sessionStorage (cleared when browser closes)
+        sessionStorage.setItem('userData', JSON.stringify(userData));
+        
+        if (rememberMe) {
+          // Only remember the username, not auto-login
+          localStorage.setItem('rememberedUsername', username);
+        } else {
+          localStorage.removeItem('rememberedUsername');
+        }
+        
+        // Show success message with role
+        showLoginSuccess(user);
+        
+        // Redirect based on role
+        setTimeout(() => {
+          window.location.href = user.redirect;
+        }, 2000);
+      } else {
+        // Show error
+        document.getElementById('passwordError').textContent = 'Invalid username or password';
+        document.getElementById('passwordError').classList.add('show');
+        
+        // Reset loading state
+        loginBtnText.style.display = 'inline';
+        loginLoading.style.display = 'none';
+        submitBtn.disabled = false;
+        
+        // Shake animation for error
+        const form = document.getElementById('loginForm');
+        form.style.animation = 'none';
+        setTimeout(() => {
+          form.style.animation = 'shake 0.5s';
+        }, 10);
+      }
+    }, 1500);
+  }
+
+  // Copy to clipboard function
+  function copyToClipboard(text) {
+    // Extract just the credential part (remove role badge)
+    const cleanText = text.split(' ')[0];
+    navigator.clipboard.writeText(cleanText).then(() => {
+      // Show copied notification
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(90deg, #ff3b30, #ffdd00);
+        color: black;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+      `;
+      notification.textContent = `Copied: ${cleanText}`;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    });
+  }
+
+  // Social login
+  function socialLogin(provider) {
+    alert(`Simulating ${provider} login...\n\nIn a real application, this would redirect to ${provider} authentication.`);
+    
+    // For demo purposes, simulate successful login as passenger
+    const user = {
+      username: 'social_user',
+      name: 'Social User',
+      email: 'social@user.com',
+      role: 'passenger',
+      redirect: 'user.html'
+    };
+    
+    sessionStorage.setItem('userData', JSON.stringify(user));
+    showLoginSuccess(user);
+    
+    setTimeout(() => {
+      window.location.href = user.redirect;
+    }, 2000);
+  }
+
+  // Forgot password modal
+  function showForgotPassword() {
+    document.getElementById('forgotPasswordModal').style.display = 'flex';
+  }
+
+  function closeForgotPassword() {
+    document.getElementById('forgotPasswordModal').style.display = 'none';
+  }
+
+  function sendResetLink() {
+    const email = document.getElementById('resetEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    // Check if email exists in our user credentials
+    const userExists = userCredentials.some(user => user.email === email);
+    
+    if (userExists) {
+      alert(`Password reset link has been sent to ${email}\n\n(Simulation: In production, an email would be sent with password reset instructions.)`);
+    } else {
+      alert(`If an account exists with email ${email}, a password reset link will be sent.\n\n(Simulation: This would check the database in production.)`);
+    }
+    
+    closeForgotPassword();
+  }
+
+  // Signup modal
+  let selectedAccountType = '';
+  
+  function showSignup() {
+    document.getElementById('signupModal').style.display = 'flex';
+  }
+
+  function closeSignup() {
+    document.getElementById('signupModal').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'none';
+    selectedAccountType = '';
+    
+    // Reset form
+    document.getElementById('signupName').value = '';
+    document.getElementById('signupEmail').value = '';
+    document.getElementById('signupStudentId').value = '';
+    document.getElementById('signupPassword').value = '';
+    document.getElementById('signupConfirmPassword').value = '';
+  }
+
+  function selectAccountType(type) {
+    selectedAccountType = type;
+    document.getElementById('signupForm').style.display = 'block';
+    
+    const studentIdField = document.getElementById('signupStudentId');
+    if (type === 'passenger') {
+      studentIdField.placeholder = 'Student ID (e.g., 2025161705)';
+      studentIdField.style.display = 'block';
+    } else {
+      studentIdField.placeholder = 'Driver License Number';
+      studentIdField.style.display = 'block';
+    }
+  }
+
+  function createAccount() {
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const studentId = document.getElementById('signupStudentId').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    
+    // Simple validation
+    if (!name || !email || !studentId || !password || !confirmPassword) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+    
+    if (!email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+    
+    // Check if student ID is already taken
+    const isTaken = userCredentials.some(user => 
+      user.username === studentId || user.email === email
+    );
+    
+    if (isTaken) {
+      alert('This student ID or email is already registered');
+      return;
+    }
+    
+    // Create new user
+    const newUser = {
+      username: studentId,
+      password: password,
+      name: name,
+      email: email,
+      role: selectedAccountType,
+      redirect: selectedAccountType === 'driver' ? 'driver.html' : 'user.html'
+    };
+    
+    // In a real app, this would be sent to backend
+    // For demo, add to local credentials array
+    userCredentials.push(newUser);
+    
+    // Store user data in sessionStorage
+    sessionStorage.setItem('userData', JSON.stringify({
+      username: studentId,
+      name: name,
+      email: email,
+      role: selectedAccountType
+    }));
+    
+    alert(`Account created successfully!\n\nWelcome to GetInTheCar, ${name}!\n\nYou are registered as a ${selectedAccountType}.`);
+    closeSignup();
+    
+    // Auto-login after signup
+    showLoginSuccess(newUser);
+    setTimeout(() => {
+      window.location.href = newUser.redirect;
+    }, 2000);
+  }
+
+  // Login success animation
+  function showLoginSuccess(user) {
+    const container = document.querySelector('.login-container');
+    const successDiv = document.createElement('div');
+    successDiv.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(26, 0, 34, 0.95));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      animation: fadeIn 0.5s ease-out;
+    `;
+    
+    const roleBadge = user.role === 'driver' ? 
+      '<span class="user-role role-driver" style="margin-left: 10px;">Driver</span>' : 
+      '<span class="user-role role-passenger" style="margin-left: 10px;">Passenger</span>';
+    
+    successDiv.innerHTML = `
+      <div style="font-size: 80px; margin-bottom: 20px; animation: bounce 1s infinite;">🎉</div>
+      <div style="font-size: 36px; font-weight: bold; background: linear-gradient(90deg, #ff3b30, #ffdd00); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">
+        Login Successful! ${roleBadge}
+      </div>
+      <div style="color: var(--muted); font-size: 18px; margin-bottom: 5px;">Welcome, ${user.name}!</div>
+      <div style="color: var(--muted); font-size: 14px; margin-bottom: 20px;">Redirecting to ${user.role} dashboard...</div>
+      <div style="margin-top: 40px; width: 200px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px;">
+        <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #ff3b30, #ffdd00); border-radius: 2px; animation: progressBar 2s linear;"></div>
+      </div>
+    `;
+    
+    container.appendChild(successDiv);
+  }
+
+  // Check for remembered username on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check if there's a remembered username
+    const rememberedUsername = localStorage.getItem('rememberedUsername');
+    if (rememberedUsername) {
+      document.getElementById('username').value = rememberedUsername;
+      document.getElementById('rememberMe').checked = true;
+    }
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+      }
+      @keyframes progressBar {
+        from { width: 0%; }
+        to { width: 100%; }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // Auto-focus username field if not already filled
+    if (!document.getElementById('username').value) {
+      document.getElementById('username').focus();
+    }
+    
+    // Add Enter key support
+    document.getElementById('password').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        login();
+      }
+    });
+  });
+
+  // Close modals when clicking outside
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      closeForgotPassword();
+      closeSignup();
+    }
+  });
+
+  // Close modals with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeForgotPassword();
+      closeSignup();
+    }
+  });
+</script>
+</body>
+</html>

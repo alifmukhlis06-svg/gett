@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GetInTheCar — Driver Schedule</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">NH</div>
+    <div>
+      <h2>GetInTheCar</h2>
+      <div class="small muted">Driver Dashboard</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="driver.html">🚗 Dashboard</a>
+    <a href="earning.html">💰 Earnings</a>
+    <a href="schedule.html" class="active">📅 Schedule</a>
+    <a href="driverprofile.html">👤 Profile</a>
+    <a href="login.html">🔐 Log Out</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div>
+      <div class="header">Driver Schedule 📅</div>
+      <div class="small muted">Plan your driving hours and view upcoming rides</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="driver-status">
+        <span class="status-indicator online"></span>
+        <span class="status-text">Online</span>
+      </div>
+      <button class="btn btn-primary" onclick="openScheduleModal()">+ Add Schedule</button>
+    </div>
+  </div>
+
+  <!-- Schedule Content -->
+  <div class="dashboard-content">
+    <!-- Week Overview -->
+    <div class="card fade-in">
+      <div class="section-header">
+        <h3>📅 This Week's Schedule</h3>
+        <div class="week-nav">
+          <button class="small-btn" onclick="previousWeek()">← Prev</button>
+          <span class="current-week" id="currentWeek">Nov 25 - Dec 1, 2024</span>
+          <button class="small-btn" onclick="nextWeek()">Next →</button>
+        </div>
+      </div>
+      
+      <div class="week-overview">
+        <div class="week-days">
+          <div class="day-header">Mon</div>
+          <div class="day-header">Tue</div>
+          <div class="day-header">Wed</div>
+          <div class="day-header">Thu</div>
+          <div class="day-header">Fri</div>
+          <div class="day-header">Sat</div>
+          <div class="day-header">Sun</div>
+          
+          <!-- Day numbers -->
+          <div class="day-number">25</div>
+          <div class="day-number">26</div>
+          <div class="day-number">27</div>
+          <div class="day-number">28</div>
+          <div class="day-number">29</div>
+          <div class="day-number">30</div>
+          <div class="day-number">1</div>
+          
+          <!-- Schedule indicators -->
+          <div class="day-schedule">
+            <div class="schedule-indicator morning">9-12</div>
+            <div class="schedule-indicator evening">17-21</div>
+          </div>
+          <div class="day-schedule">
+            <div class="schedule-indicator morning">8-12</div>
+            <div class="schedule-indicator evening">16-20</div>
+          </div>
+          <div class="day-schedule">
+            <div class="schedule-indicator morning">10-13</div>
+          </div>
+          <div class="day-schedule">
+            <div class="schedule-indicator morning">9-12</div>
+            <div class="schedule-indicator evening">18-22</div>
+          </div>
+          <div class="day-schedule">
+            <div class="schedule-indicator evening">14-20</div>
+          </div>
+          <div class="day-schedule">
+            <div class="schedule-indicator morning">10-15</div>
+          </div>
+          <div class="day-schedule">
+            <!-- No schedule -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="schedule-legend">
+        <div class="legend-item">
+          <div class="legend-color morning"></div>
+          <span>Morning Shift (Before 3 PM)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color evening"></div>
+          <span>Evening Shift (After 3 PM)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color peak"></div>
+          <span>Peak Hours (Extra Earnings)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Schedule -->
+    <div class="card fade-in" style="animation-delay: 0.1s">
+      <div class="section-header">
+        <h3>📋 Today's Schedule (Wednesday, Nov 27)</h3>
+        <button class="btn btn-secondary small-btn" onclick="toggleTodaySchedule()">Toggle Details</button>
+      </div>
+      
+      <div id="todaySchedule" class="today-schedule-details">
+        <div class="schedule-item active">
+          <div class="schedule-time">
+            <div class="time-range">10:00 AM - 1:00 PM</div>
+            <div class="duration">3 hours</div>
+          </div>
+          <div class="schedule-info">
+            <div class="schedule-title">Morning Shift</div>
+            <div class="schedule-desc">
+              <span class="schedule-badge">🟢 Active Now</span>
+              <span class="schedule-location">📍 UiTM Arau Area</span>
+            </div>
+            <div class="schedule-stats">
+              <span>🎯 Target: RM 50</span>
+              <span>🚗 Expected Rides: 6-8</span>
+              <span>💰 Hourly Rate: ~RM 16.67</span>
+            </div>
+          </div>
+          <div class="schedule-actions">
+            <button class="btn btn-secondary" onclick="endShiftEarly(this)">End Early</button>
+            <button class="btn btn-primary" onclick="extendShift(this)">+1 Hour</button>
+          </div>
+        </div>
+        
+        <div class="schedule-item upcoming">
+          <div class="schedule-time">
+            <div class="time-range">6:00 PM - 10:00 PM</div>
+            <div class="duration">4 hours</div>
+          </div>
+          <div class="schedule-info">
+            <div class="schedule-title">Evening Peak Hours</div>
+            <div class="schedule-desc">
+              <span class="schedule-badge peak">⏰ Peak Hours</span>
+              <span class="schedule-location">📍 City Center</span>
+            </div>
+            <div class="schedule-stats">
+              <span>🎯 Target: RM 80</span>
+              <span>🚗 Expected Rides: 8-10</span>
+              <span>💰 Hourly Rate: ~RM 20.00</span>
+            </div>
+          </div>
+          <div class="schedule-actions">
+            <button class="btn btn-secondary" onclick="cancelShift(this)">Cancel</button>
+            <button class="btn btn-primary" onclick="modifyShift(this)">Modify</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="today-summary">
+        <div class="summary-item">
+          <div class="summary-icon">⏰</div>
+          <div class="summary-content">
+            <div class="summary-value">7 hours</div>
+            <div class="summary-label">Total Scheduled</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon">💰</div>
+          <div class="summary-content">
+            <div class="summary-value">RM 130</div>
+            <div class="summary-label">Expected Earnings</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon">🚗</div>
+          <div class="summary-content">
+            <div class="summary-value">14-18 rides</div>
+            <div class="summary-label">Expected Rides</div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-icon">⭐</div>
+          <div class="summary-content">
+            <div class="summary-value">+5% Bonus</div>
+            <div class="summary-label">Peak Hours Bonus</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Scheduled Rides -->
+    <div class="card fade-in" style="animation-delay: 0.2s">
+      <div class="section-header">
+        <h3>📋 Upcoming Scheduled Rides</h3>
+        <div class="filter-options">
+          <select class="filter-select" onchange="filterUpcomingRides(this.value)">
+            <option value="all">All Rides</option>
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="week">This Week</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="upcomingRides" class="upcoming-rides-list">
+        <div class="upcoming-ride-card">
+          <div class="ride-date">
+            <div class="date-day">Today</div>
+            <div class="date-time">11:30 AM</div>
+          </div>
+          <div class="ride-details">
+            <div class="passenger-info">
+              <div class="passenger-avatar">M</div>
+              <div>
+                <div class="passenger-name">Mohd Azrul</div>
+                <div class="passenger-meta">⭐ 4.9 • 34 rides</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point">
+                <span class="point-icon">🟢</span>
+                <span>Kolej Cengal, UiTM Arau</span>
+              </div>
+              <div class="route-point">
+                <span class="point-icon">🔴</span>
+                <span>Kompleks Star, Arau</span>
+              </div>
+            </div>
+            <div class="ride-info">
+              <span>📏 2.1 km</span>
+              <span>⏱️ 5 min</span>
+              <span>💰 RM 6.50</span>
+            </div>
+          </div>
+          <div class="ride-actions">
+            <button class="btn btn-secondary" onclick="remindPassenger(this)">Remind</button>
+            <button class="btn btn-primary" onclick="navigateToPickup(this)">Navigate</button>
+          </div>
+        </div>
+        
+        <div class="upcoming-ride-card">
+          <div class="ride-date">
+            <div class="date-day">Today</div>
+            <div class="date-time">12:15 PM</div>
+          </div>
+          <div class="ride-details">
+            <div class="passenger-info">
+              <div class="passenger-avatar">S</div>
+              <div>
+                <div class="passenger-name">Sarah Lim</div>
+                <div class="passenger-meta">⭐ 4.7 • 12 rides</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point">
+                <span class="point-icon">🟢</span>
+                <span>UiTM Library</span>
+              </div>
+              <div class="route-point">
+                <span class="point-icon">🔴</span>
+                <span>Arau Bus Station</span>
+              </div>
+            </div>
+            <div class="ride-info">
+              <span>📏 3.5 km</span>
+              <span>⏱️ 8 min</span>
+              <span>💰 RM 8.00</span>
+            </div>
+          </div>
+          <div class="ride-actions">
+            <button class="btn btn-secondary" onclick="remindPassenger(this)">Remind</button>
+            <button class="btn btn-primary" onclick="navigateToPickup(this)">Navigate</button>
+          </div>
+        </div>
+        
+        <div class="upcoming-ride-card">
+          <div class="ride-date">
+            <div class="date-day">Tomorrow</div>
+            <div class="date-time">9:00 AM</div>
+          </div>
+          <div class="ride-details">
+            <div class="passenger-info">
+              <div class="passenger-avatar">A</div>
+              <div>
+                <div class="passenger-name">Ahmad Fauzi</div>
+                <div class="passenger-meta">⭐ 5.0 • 28 rides</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point">
+                <span class="point-icon">🟢</span>
+                <span>Kangar Hospital</span>
+              </div>
+              <div class="route-point">
+                <span class="point-icon">🔴</span>
+                <span>UiTM Arau</span>
+              </div>
+            </div>
+            <div class="ride-info">
+              <span>📏 7.2 km</span>
+              <span>⏱️ 15 min</span>
+              <span>💰 RM 15.00</span>
+            </div>
+          </div>
+          <div class="ride-actions">
+            <button class="btn btn-secondary" onclick="remindPassenger(this)">Remind</button>
+            <button class="btn btn-primary" onclick="navigateToPickup(this)">Navigate</button>
+          </div>
+        </div>
+        
+        <div class="upcoming-ride-card">
+          <div class="ride-date">
+            <div class="date-day">Friday</div>
+            <div class="date-time">6:30 PM</div>
+          </div>
+          <div class="ride-details">
+            <div class="passenger-info">
+              <div class="passenger-avatar">R</div>
+              <div>
+                <div class="passenger-name">Raju Kumar</div>
+                <div class="passenger-meta">⭐ 4.8 • 45 rides</div>
+              </div>
+            </div>
+            <div class="ride-route">
+              <div class="route-point">
+                <span class="point-icon">🟢</span>
+                <span>Pusat Bandar Kangar</span>
+              </div>
+              <div class="route-point">
+                <span class="point-icon">🔴</span>
+                <span>Kuala Perlis Ferry</span>
+              </div>
+            </div>
+            <div class="ride-info">
+              <span>📏 12.5 km</span>
+              <span>⏱️ 20 min</span>
+              <span>💰 RM 25.00</span>
+            </div>
+          </div>
+          <div class="ride-actions">
+            <button class="btn btn-secondary" onclick="remindPassenger(this)">Remind</button>
+            <button class="btn btn-primary" onclick="navigateToPickup(this)">Navigate</button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="noUpcomingRides" class="empty-state" style="display: none;">
+        <div class="empty-icon">📅</div>
+        <h3>No Upcoming Scheduled Rides</h3>
+        <p class="small muted">When passengers schedule rides in advance, they will appear here.</p>
+      </div>
+    </div>
+
+    <!-- Weekly Performance -->
+    <div class="card fade-in" style="animation-delay: 0.3s">
+      <div class="section-header">
+        <h3>📊 Weekly Performance</h3>
+        <div class="time-filter">
+          <button class="filter-btn active" onclick="changePerformanceView('week')">This Week</button>
+          <button class="filter-btn" onclick="changePerformanceView('last')">Last Week</button>
+          <button class="filter-btn" onclick="changePerformanceView('month')">This Month</button>
+        </div>
+      </div>
+      
+      <div class="performance-stats">
+        <div class="performance-card">
+          <div class="performance-icon">💰</div>
+          <div class="performance-content">
+            <div class="performance-title">Total Earnings</div>
+            <div class="performance-value">RM 425.80</div>
+            <div class="performance-change positive">+12% from last week</div>
+          </div>
+        </div>
+        
+        <div class="performance-card">
+          <div class="performance-icon">🚗</div>
+          <div class="performance-content">
+            <div class="performance-title">Completed Rides</div>
+            <div class="performance-value">48</div>
+            <div class="performance-change positive">+8% from last week</div>
+          </div>
+        </div>
+        
+        <div class="performance-card">
+          <div class="performance-icon">⭐</div>
+          <div class="performance-content">
+            <div class="performance-title">Average Rating</div>
+            <div class="performance-value">4.82</div>
+            <div class="performance-change positive">+0.1 from last week</div>
+          </div>
+        </div>
+        
+        <div class="performance-card">
+          <div class="performance-icon">⏰</div>
+          <div class="performance-content">
+            <div class="performance-title">Online Hours</div>
+            <div class="performance-value">32.5h</div>
+            <div class="performance-change negative">-2h from last week</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="performance-chart">
+        <div class="chart-header">
+          <div class="chart-title">Earnings by Day</div>
+          <div class="chart-legend">
+            <div class="legend-item">
+              <div class="legend-color scheduled"></div>
+              <span>Scheduled Hours</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color unscheduled"></div>
+              <span>Unscheduled Hours</span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-bars">
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Mon</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 70%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 30%"></div>
+            </div>
+            <div class="chart-bar-value">RM 68</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Tue</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 85%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 15%"></div>
+            </div>
+            <div class="chart-bar-value">RM 72</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Wed</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 60%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 40%"></div>
+            </div>
+            <div class="chart-bar-value">RM 65</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Thu</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 90%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 10%"></div>
+            </div>
+            <div class="chart-bar-value">RM 88</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Fri</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 75%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 25%"></div>
+            </div>
+            <div class="chart-bar-value">RM 76</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar-label">Sat</div>
+            <div class="chart-bar">
+              <div class="chart-bar-fill scheduled" style="height: 50%"></div>
+              <div class="chart-bar-fill unscheduled" style="height: 50%"></div>
+            </div>
+            <div class="chart-bar-value">RM 56</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Schedule Modal -->
+<div id="scheduleModal" class="modal-overlay" style="display: none;">
+  <div class="modal card">
+    <div class="modal-header">
+      <div class="modal-title">Add New Schedule</div>
+      <button class="modal-close" onclick="closeScheduleModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="schedule-form">
+        <div class="form-group">
+          <label class="form-label">Select Date</label>
+          <input type="date" id="scheduleDate" class="form-input" value="2024-11-27" min="2024-11-27">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Time Range</label>
+          <div class="time-range-inputs">
+            <input type="time" id="startTime" class="time-input" value="10:00">
+            <span class="time-separator">to</span>
+            <input type="time" id="endTime" class="time-input" value="13:00">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Preferred Area</label>
+          <select id="scheduleArea" class="form-select">
+            <option value="uitm">UiTM Arau Area</option>
+            <option value="city">City Center</option>
+            <option value="residential">Residential Areas</option>
+            <option value="any">Any Area</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Vehicle Type</label>
+          <div class="vehicle-options">
+            <label class="vehicle-option">
+              <input type="radio" name="vehicle" value="car" checked>
+              <span class="vehicle-icon">🚗</span>
+              <span>Car</span>
+            </label>
+            <label class="vehicle-option">
+              <input type="radio" name="vehicle" value="motor">
+              <span class="vehicle-icon">🏍️</span>
+              <span>Motorcycle</span>
+            </label>
+            <label class="vehicle-option">
+              <input type="radio" name="vehicle" value="both">
+              <span class="vehicle-icon">🚗🏍️</span>
+              <span>Both</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Earnings Target (Optional)</label>
+          <div class="target-input">
+            <span class="currency">RM</span>
+            <input type="number" id="earningsTarget" class="form-input" placeholder="0.00" min="0" step="10">
+          </div>
+          <div class="form-hint">Set a goal for this schedule to stay motivated</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Repeat Schedule</label>
+          <div class="repeat-options">
+            <label class="repeat-option">
+              <input type="radio" name="repeat" value="none" checked>
+              <span>Don't repeat</span>
+            </label>
+            <label class="repeat-option">
+              <input type="radio" name="repeat" value="daily">
+              <span>Daily this week</span>
+            </label>
+            <label class="repeat-option">
+              <input type="radio" name="repeat" value="weekly">
+              <span>Weekly</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="schedule-preview">
+          <div class="preview-title">Schedule Preview</div>
+          <div class="preview-item">
+            <span class="preview-label">Date:</span>
+            <span class="preview-value" id="previewDate">Wednesday, Nov 27</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Time:</span>
+            <span class="preview-value" id="previewTime">10:00 AM - 1:00 PM (3 hours)</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Expected Earnings:</span>
+            <span class="preview-value" id="previewEarnings">RM 45 - 60</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">Save Schedule</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Theme toggle logic
+  const body = document.body;
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    const knob = darkSwitch.querySelector('.knob');
+    darkSwitch.classList.toggle('dark-toggle-on');
+    body.classList.toggle('dark');
+    if (body.classList.contains('dark')) {
+      knob.style.left = '25px';
+      knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+    } else {
+      knob.style.left = '3px';
+      knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+    }
+  });
+
+  // Date handling for week navigation
+  let currentWeekStart = new Date('2024-11-25');
+  
+  function updateWeekDisplay() {
+    const weekStart = new Date(currentWeekStart);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    const options = { month: 'short', day: 'numeric' };
+    const weekStartStr = weekStart.toLocaleDateString('en-US', options);
+    const weekEndStr = weekEnd.toLocaleDateString('en-US', options);
+    const year = weekEnd.getFullYear();
+    
+    document.getElementById('currentWeek').textContent = `${weekStartStr} - ${weekEndStr}, ${year}`;
+  }
+  
+  function previousWeek() {
+    currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+    updateWeekDisplay();
+    showNotification('Showing previous week');
+  }
+  
+  function nextWeek() {
+    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+    updateWeekDisplay();
+    showNotification('Showing next week');
+  }
+  
+  // Schedule functions
+  function toggleTodaySchedule() {
+    const scheduleDetails = document.getElementById('todaySchedule');
+    const toggleBtn = document.querySelector('.section-header .small-btn');
+    
+    if (scheduleDetails.style.display === 'none') {
+      scheduleDetails.style.display = 'block';
+      toggleBtn.textContent = 'Hide Details';
+    } else {
+      scheduleDetails.style.display = 'none';
+      toggleBtn.textContent = 'Show Details';
+    }
+  }
+  
+  function endShiftEarly(button) {
+    if (confirm('End this shift early? You will stop receiving ride requests for this schedule.')) {
+      const scheduleItem = button.closest('.schedule-item');
+      scheduleItem.classList.remove('active');
+      scheduleItem.classList.add('completed');
+      scheduleItem.querySelector('.schedule-badge').textContent = '✅ Completed Early';
+      scheduleItem.querySelector('.schedule-actions').innerHTML = '<button class="btn btn-secondary" disabled>Shift Ended</button>';
+      showNotification('Shift ended early');
+    }
+  }
+  
+  function extendShift(button) {
+    const scheduleItem = button.closest('.schedule-item');
+    const timeRange = scheduleItem.querySelector('.time-range');
+    const duration = scheduleItem.querySelector('.duration');
+    
+    // Extract current end time and add 1 hour
+    const currentText = timeRange.textContent;
+    const match = currentText.match(/(\d+):(\d+)\s*(AM|PM)/g);
+    if (match && match[1]) {
+      const endTime = match[1];
+      const [hours, minutes] = endTime.split(':');
+      let newHour = parseInt(hours);
+      const period = endTime.includes('PM') ? 'PM' : 'AM';
+      
+      newHour = (newHour % 12) + 1;
+      if (newHour === 12) {
+        // Toggle AM/PM if crossing noon/midnight
+        const newPeriod = period === 'AM' ? 'PM' : 'AM';
+        timeRange.textContent = currentText.replace(/(\d+:\d+ [AP]M)$/, `${newHour}:${minutes} ${newPeriod}`);
+      } else {
+        timeRange.textContent = currentText.replace(/(\d+:\d+ [AP]M)$/, `${newHour}:${minutes} ${period}`);
+      }
+      
+      // Update duration
+      const currentDuration = parseInt(duration.textContent);
+      duration.textContent = `${currentDuration + 1} hours`;
+      
+      showNotification('Shift extended by 1 hour');
+    }
+  }
+  
+  function cancelShift(button) {
+    if (confirm('Cancel this scheduled shift? This cannot be undone.')) {
+      const scheduleItem = button.closest('.schedule-item');
+      scheduleItem.style.opacity = '0.5';
+      scheduleItem.style.pointerEvents = 'none';
+      
+      setTimeout(() => {
+        scheduleItem.style.display = 'none';
+        showNotification('Scheduled shift cancelled');
+      }, 300);
+    }
+  }
+  
+  function modifyShift(button) {
+    openScheduleModal();
+    showNotification('Opening schedule editor...');
+  }
+  
+  // Ride functions
+  function filterUpcomingRides(filter) {
+    const rideCards = document.querySelectorAll('.upcoming-ride-card');
+    const noRidesMsg = document.getElementById('noUpcomingRides');
+    
+    let visibleCount = 0;
+    
+    rideCards.forEach(card => {
+      const dayText = card.querySelector('.date-day').textContent.toLowerCase();
+      let shouldShow = false;
+      
+      switch(filter) {
+        case 'today':
+          shouldShow = dayText === 'today';
+          break;
+        case 'tomorrow':
+          shouldShow = dayText === 'tomorrow';
+          break;
+        case 'week':
+          shouldShow = true; // Show all for this week
+          break;
+        default: // 'all'
+          shouldShow = true;
+      }
+      
+      card.style.display = shouldShow ? 'flex' : 'none';
+      if (shouldShow) visibleCount++;
+    });
+    
+    noRidesMsg.style.display = visibleCount === 0 ? 'block' : 'none';
+    showNotification(`Filtered to show ${filter} rides`);
+  }
+  
+  function remindPassenger(button) {
+    const rideCard = button.closest('.upcoming-ride-card');
+    const passengerName = rideCard.querySelector('.passenger-name').textContent;
+    
+    button.textContent = 'Reminded ✓';
+    button.disabled = true;
+    button.classList.remove('btn-secondary');
+    button.classList.add('btn-disabled');
+    
+    setTimeout(() => {
+      button.textContent = 'Remind';
+      button.disabled = false;
+      button.classList.remove('btn-disabled');
+      button.classList.add('btn-secondary');
+    }, 3000);
+    
+    showNotification(`Reminder sent to ${passengerName}`);
+  }
+  
+  function navigateToPickup(button) {
+    const rideCard = button.closest('.upcoming-ride-card');
+    const pickupLocation = rideCard.querySelector('.route-point:first-child span:nth-child(2)').textContent;
+    
+    button.textContent = 'Navigating...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+      button.textContent = 'Navigate';
+      button.disabled = false;
+    }, 2000);
+    
+    showNotification(`Opening navigation to ${pickupLocation}`);
+  }
+  
+  // Performance functions
+  function changePerformanceView(view) {
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Update chart data based on view
+    const chartValues = document.querySelectorAll('.chart-bar-value');
+    
+    if (view === 'week') {
+      // This week's data (already displayed)
+      chartValues[0].textContent = 'RM 68';
+      chartValues[1].textContent = 'RM 72';
+      chartValues[2].textContent = 'RM 65';
+      chartValues[3].textContent = 'RM 88';
+      chartValues[4].textContent = 'RM 76';
+      chartValues[5].textContent = 'RM 56';
+    } else if (view === 'last') {
+      // Last week's data
+      chartValues[0].textContent = 'RM 62';
+      chartValues[1].textContent = 'RM 65';
+      chartValues[2].textContent = 'RM 58';
+      chartValues[3].textContent = 'RM 72';
+      chartValues[4].textContent = 'RM 68';
+      chartValues[5].textContent = 'RM 50';
+    } else if (view === 'month') {
+      // This month's data (sample)
+      chartValues[0].textContent = 'RM 280';
+      chartValues[1].textContent = 'RM 295';
+      chartValues[2].textContent = 'RM 265';
+      chartValues[3].textContent = 'RM 310';
+      chartValues[4].textContent = 'RM 290';
+      chartValues[5].textContent = 'RM 220';
+    }
+    
+    showNotification(`Showing ${view} performance data`);
+  }
+  
+  // Modal functions
+  function openScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'flex';
+    updateSchedulePreview();
+  }
+  
+  function closeScheduleModal() {
+    document.getElementById('scheduleModal').style.display = 'none';
+  }
+  
+  function updateSchedulePreview() {
+    const dateInput = document.getElementById('scheduleDate');
+    const startTimeInput = document.getElementById('startTime');
+    const endTimeInput = document.getElementById('endTime');
+    
+    // Format date
+    const date = new Date(dateInput.value);
+    const options = { weekday: 'long', month: 'short', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-US', options);
+    document.getElementById('previewDate').textContent = formattedDate;
+    
+    // Format time
+    const formatTime = (timeStr) => {
+      const [hours, minutes] = timeStr.split(':');
+      const hour = parseInt(hours);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${period}`;
+    };
+    
+    const startTime = formatTime(startTimeInput.value);
+    const endTime = formatTime(endTimeInput.value);
+    
+    // Calculate duration
+    const start = new Date(`2000-01-01T${startTimeInput.value}`);
+    const end = new Date(`2000-01-01T${endTimeInput.value}`);
+    const durationHours = (end - start) / (1000 * 60 * 60);
+    
+    document.getElementById('previewTime').textContent = `${startTime} - ${endTime} (${durationHours} hours)`;
+    
+    // Calculate estimated earnings (RM 15-20 per hour)
+    const minEarnings = Math.round(durationHours * 15);
+    const maxEarnings = Math.round(durationHours * 20);
+    document.getElementById('previewEarnings').textContent = `RM ${minEarnings} - ${maxEarnings}`;
+  }
+  
+  function saveSchedule() {
+    const dateInput = document.getElementById('scheduleDate').value;
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+    const area = document.getElementById('scheduleArea').value;
+    
+    // In a real app, you would save this to a database
+    // For now, just show a notification
+    closeScheduleModal();
+    showNotification('New schedule added successfully!');
+  }
+  
+  // Helper functions
+  function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span>${message}</span>
+      </div>
+    `;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+  
+  // Event listeners for live preview updates
+  document.getElementById('scheduleDate').addEventListener('change', updateSchedulePreview);
+  document.getElementById('startTime').addEventListener('change', updateSchedulePreview);
+  document.getElementById('endTime').addEventListener('change', updateSchedulePreview);
+  document.getElementById('scheduleArea').addEventListener('change', updateSchedulePreview);
+  
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    updateWeekDisplay();
+    
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeScheduleModal();
+      }
+    });
+    
+    // Close modal on overlay click
+    document.getElementById('scheduleModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('scheduleModal')) {
+        closeScheduleModal();
+      }
+    });
+  });
+</script>
+
+
+</body>
+</html>
+

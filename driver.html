@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GetInTheCar — Driver Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">NH</div>
+    <div>
+      <h2>GetInTheCar</h2>
+      <div class="small muted">Driver Dashboard</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="driver.html" class="active">🚗 Dashboard</a>
+    <a href="earning.html">💰 Earnings</a>
+    <a href="schedule.html">📅 Schedule</a>
+    <a href="driverprofile.html">👤 Profile</a>
+    <a href="login.html">🔐 Log Out</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div>
+      <div class="header">Welcome, <span style="color:var(--accent-1)">HARITH</span> 👋</div>
+      <div class="small muted">Manage ride requests and earnings</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="driver-status">
+        <span class="status-indicator online"></span>
+        <span class="status-text">Online</span>
+      </div>
+      <button class="btn btn-secondary" onclick="toggleOnlineStatus()">Go Offline</button>
+    </div>
+  </div>
+
+  <!-- Driver Stats -->
+  <div class="driver-stats-container">
+    <div class="card driver-stats fade-in">
+      <div class="stat-item">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <div class="stat-value">RM 68.50</div>
+          <div class="stat-label">Today's Earnings</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">🚗</div>
+        <div class="stat-content">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Completed Rides</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-content">
+          <div class="stat-value">4.8</div>
+          <div class="stat-label">Rating</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">⏰</div>
+        <div class="stat-content">
+          <div class="stat-value">5.2h</div>
+          <div class="stat-label">Online Time</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Ride Section -->
+  <div class="dashboard-content">
+    <!-- Active Ride (if any) -->
+    <div id="activeRide" class="card active-ride-section fade-in" style="display: none;">
+      <div class="section-header">
+        <h3>🚗 Active Ride</h3>
+        <span class="ride-badge ongoing">Ongoing</span>
+      </div>
+      <div class="active-ride-details">
+        <div class="ride-info-card">
+          <div class="passenger-info">
+            <div class="passenger-avatar">P</div>
+            <div>
+              <div class="passenger-name">Ahmad R.</div>
+              <div class="passenger-rating">⭐ 4.9</div>
+            </div>
+          </div>
+          <div class="ride-route">
+            <div class="route-item">
+              <span class="route-label">From:</span>
+              <span class="route-value">UiTM Arau</span>
+            </div>
+            <div class="route-item">
+              <span class="route-label">To:</span>
+              <span class="route-value">Arau KTM Station</span>
+            </div>
+          </div>
+          <div class="ride-metrics">
+            <div class="metric">
+              <span class="metric-label">Distance:</span>
+              <span class="metric-value">3.2 km</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">ETA:</span>
+              <span class="metric-value">8 min</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Fare:</span>
+              <span class="metric-value">RM 8.50</span>
+            </div>
+          </div>
+          <div class="ride-actions">
+            <button class="btn btn-secondary" onclick="arriveAtPickup()">Arrived</button>
+            <button class="btn btn-secondary" onclick="startTrip()">Start Trip</button>
+            <button class="btn btn-primary" onclick="completeTrip()">Complete Trip</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ride Requests -->
+    <div class="card ride-requests-section fade-in">
+      <div class="section-header">
+        <h3>📨 New Ride Requests</h3>
+        <button class="small-btn" onclick="refreshRequests()">Refresh</button>
+      </div>
+      
+      <div id="rideRequests" class="ride-requests-list">
+        <!-- Request 1 -->
+        <div class="request-card fade-in">
+          <div class="request-header">
+            <div class="passenger-info">
+              <div class="passenger-avatar">A</div>
+              <div>
+                <div class="passenger-name">Alif Mukhlis</div>
+                <div class="passenger-details">
+                  <span>⭐ 4.8</span>
+                  <span>•</span>
+                  <span>47 rides</span>
+                </div>
+              </div>
+            </div>
+            <div class="request-time">Just now</div>
+          </div>
+          
+          <div class="request-details">
+            <div class="route-info">
+              <div class="route-point pickup">
+                <span class="point-marker">🟢</span>
+                <div>
+                  <div class="point-label">Pickup</div>
+                  <div class="point-address">Kolej Cengal, UiTM Arau</div>
+                </div>
+              </div>
+              <div class="route-point destination">
+                <span class="point-marker">🔴</span>
+                <div>
+                  <div class="point-label">Destination</div>
+                  <div class="point-address">Kompleks Star, Arau</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ride-info">
+              <div class="info-item">
+                <span class="info-label">Distance:</span>
+                <span class="info-value">2.1 km</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Est. Duration:</span>
+                <span class="info-value">5 min</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Vehicle:</span>
+                <span class="info-value">Car</span>
+              </div>
+            </div>
+            
+            <!-- Price Input Section -->
+            <div class="price-input-section">
+              <div class="price-header">
+                <span class="price-label">Set Your Price:</span>
+                <span class="base-price">Base: RM 5.20</span>
+              </div>
+              <div class="price-input-group">
+                <div class="price-input-wrapper">
+                  <span class="currency">RM</span>
+                  <input type="number" class="price-input" id="price1" value="6.00" min="5.20" max="20.00" step="0.10">
+                </div>
+                <div class="price-slider">
+                  <input type="range" class="price-slider-input" min="5.20" max="20.00" step="0.10" value="6.00" oninput="updatePriceInput('price1', this.value)">
+                </div>
+              </div>
+              <div class="price-notes">
+                <div class="price-breakdown">
+                  Base fare: RM 3.00 + RM 1.50/km × 2.1 km = RM 6.15
+                </div>
+                <div class="commission">Commission (15%): RM 0.92</div>
+              </div>
+            </div>
+            
+            <div class="request-actions">
+              <button class="btn btn-secondary" onclick="declineRequest(1)">Decline</button>
+              <button class="btn btn-primary" onclick="acceptRequest(1)">Accept (RM <span id="displayPrice1">6.00</span>)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Request 2 -->
+        <div class="request-card fade-in" style="animation-delay: 0.1s">
+          <div class="request-header">
+            <div class="passenger-info">
+              <div class="passenger-avatar">S</div>
+              <div>
+                <div class="passenger-name">Siti Aisyah</div>
+                <div class="passenger-details">
+                  <span>⭐ 4.9</span>
+                  <span>•</span>
+                  <span>23 rides</span>
+                </div>
+              </div>
+            </div>
+            <div class="request-time">2 min ago</div>
+          </div>
+          
+          <div class="request-details">
+            <div class="route-info">
+              <div class="route-point pickup">
+                <span class="point-marker">🟢</span>
+                <div>
+                  <div class="point-label">Pickup</div>
+                  <div class="point-address">Yasmeen Nasi Kandar</div>
+                </div>
+              </div>
+              <div class="route-point destination">
+                <span class="point-marker">🔴</span>
+                <div>
+                  <div class="point-label">Destination</div>
+                  <div class="point-address">UiTM Arau Main Gate</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ride-info">
+              <div class="info-item">
+                <span class="info-label">Distance:</span>
+                <span class="info-value">7.5 km</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Est. Duration:</span>
+                <span class="info-value">15 min</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Vehicle:</span>
+                <span class="info-value">Car</span>
+              </div>
+            </div>
+            
+            <!-- Price Input Section -->
+            <div class="price-input-section">
+              <div class="price-header">
+                <span class="price-label">Set Your Price:</span>
+                <span class="base-price">Base: RM 14.25</span>
+              </div>
+              <div class="price-input-group">
+                <div class="price-input-wrapper">
+                  <span class="currency">RM</span>
+                  <input type="number" class="price-input" id="price2" value="15.00" min="14.25" max="30.00" step="0.10">
+                </div>
+                <div class="price-slider">
+                  <input type="range" class="price-slider-input" min="14.25" max="30.00" step="0.10" value="15.00" oninput="updatePriceInput('price2', this.value)">
+                </div>
+              </div>
+              <div class="price-notes">
+                <div class="price-breakdown">
+                  Base fare: RM 3.00 + RM 1.50/km × 7.5 km = RM 14.25
+                </div>
+                <div class="commission">Commission (15%): RM 2.25</div>
+              </div>
+            </div>
+            
+            <div class="request-actions">
+              <button class="btn btn-secondary" onclick="declineRequest(2)">Decline</button>
+              <button class="btn btn-primary" onclick="acceptRequest(2)">Accept (RM <span id="displayPrice2">15.00</span>)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Request 3 (Motor) -->
+        <div class="request-card fade-in" style="animation-delay: 0.2s">
+          <div class="request-header">
+            <div class="passenger-info">
+              <div class="passenger-avatar">H</div>
+              <div>
+                <div class="passenger-name">Hazim Firdaus</div>
+                <div class="passenger-details">
+                  <span>⭐ 4.7</span>
+                  <span>•</span>
+                  <span>12 rides</span>
+                </div>
+              </div>
+            </div>
+            <div class="request-time">5 min ago</div>
+          </div>
+          
+          <div class="request-details">
+            <div class="route-info">
+              <div class="route-point pickup">
+                <span class="point-marker">🟢</span>
+                <div>
+                  <div class="point-label">Pickup</div>
+                  <div class="point-address">Kangar Bus Station</div>
+                </div>
+              </div>
+              <div class="route-point destination">
+                <span class="point-marker">🔴</span>
+                <div>
+                  <div class="point-label">Destination</div>
+                  <div class="point-address">Pusat Bandar Kangar</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="ride-info">
+              <div class="info-item">
+                <span class="info-label">Distance:</span>
+                <span class="info-value">5.8 km</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Est. Duration:</span>
+                <span class="info-value">12 min</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Vehicle:</span>
+                <span class="info-value">Motorcycle</span>
+              </div>
+            </div>
+            
+            <!-- Price Input Section -->
+            <div class="price-input-section">
+              <div class="price-header">
+                <span class="price-label">Set Your Price:</span>
+                <span class="base-price">Base: RM 6.64</span>
+              </div>
+              <div class="price-input-group">
+                <div class="price-input-wrapper">
+                  <span class="currency">RM</span>
+                  <input type="number" class="price-input" id="price3" value="7.00" min="6.64" max="15.00" step="0.10">
+                </div>
+                <div class="price-slider">
+                  <input type="range" class="price-slider-input" min="6.64" max="15.00" step="0.10" value="7.00" oninput="updatePriceInput('price3', this.value)">
+                </div>
+              </div>
+              <div class="price-notes">
+                <div class="price-breakdown">
+                  Base fare: RM 2.00 + RM 0.80/km × 5.8 km = RM 6.64
+                </div>
+                <div class="commission">Commission (15%): RM 1.05</div>
+              </div>
+            </div>
+            
+            <div class="request-actions">
+              <button class="btn btn-secondary" onclick="declineRequest(3)">Decline</button>
+              <button class="btn btn-primary" onclick="acceptRequest(3)">Accept (RM <span id="displayPrice3">7.00</span>)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="noRequests" class="empty-state" style="display: none;">
+        <div class="empty-icon">🚗</div>
+        <h3>No Ride Requests</h3>
+        <p class="small muted">When you receive new ride requests, they will appear here.</p>
+      </div>
+    </div>
+
+    <!-- Driver Information -->
+    <div class="card driver-info-section fade-in" style="animation-delay: 0.3s">
+      <div class="section-header">
+        <h3>ℹ️ Driver Information</h3>
+      </div>
+      <div class="driver-info-grid">
+        <div class="info-card">
+          <div class="info-icon">🚘</div>
+          <div class="info-content">
+            <div class="info-title">Vehicle</div>
+            <div class="info-value">Toyota Vios (KEN 5782)</div>
+            <div class="info-sub">Available for Car rides</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">📍</div>
+          <div class="info-content">
+            <div class="info-title">Current Location</div>
+            <div class="info-value">Near UiTM Arau</div>
+            <div class="info-sub">Within 2km radius</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">💰</div>
+          <div class="info-content">
+            <div class="info-title">Earnings Today</div>
+            <div class="info-value">RM 65.80</div>
+            <div class="info-sub">8 rides completed</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🎯</div>
+          <div class="info-content">
+            <div class="info-title">Today's Goal</div>
+            <div class="info-value">RM 100</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 82%"></div>
+            </div>
+            <div class="info-sub">66% completed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Accept Ride Modal -->
+<div id="acceptModal" class="modal-overlay" style="display: none;">
+  <div class="modal card">
+    <div class="modal-header">
+      <div class="modal-title">Accept Ride Request</div>
+      <button class="modal-close" onclick="closeAcceptModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="accept-details">
+        <div class="passenger-info-modal">
+          <div class="passenger-avatar-large">A</div>
+          <div>
+            <div class="passenger-name-large">Alif Mukhlis</div>
+            <div class="passenger-rating-large">⭐ 4.8 (47 rides)</div>
+          </div>
+        </div>
+        
+        <div class="route-details-modal">
+          <div class="route-point-modal">
+            <span class="point-icon">🟢</span>
+            <div>
+              <div class="point-label-modal">Pickup</div>
+              <div class="point-address-modal">Kolej Dahlia, UiTM Arau</div>
+            </div>
+          </div>
+          <div class="route-point-modal">
+            <span class="point-icon">🔴</span>
+            <div>
+              <div class="point-label-modal">Destination</div>
+              <div class="point-address-modal">Kompleks Star, Arau</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="fare-summary">
+          <div class="fare-item">
+            <span>Your Price:</span>
+            <span class="fare-value" id="modalFare">RM 6.00</span>
+          </div>
+          <div class="fare-item">
+            <span>Commission (15%):</span>
+            <span class="fare-value">RM 0.92</span>
+          </div>
+          <div class="fare-item total">
+            <span>Your Earnings:</span>
+            <span class="fare-value total" id="modalEarnings">RM 5.08</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeAcceptModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmAccept()">Confirm Acceptance</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Theme toggle logic
+  const body = document.body;
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    const knob = darkSwitch.querySelector('.knob');
+    darkSwitch.classList.toggle('dark-toggle-on');
+    body.classList.toggle('dark');
+    if (body.classList.contains('dark')) {
+      knob.style.left = '25px';
+      knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+    } else {
+      knob.style.left = '3px';
+      knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+    }
+  });
+
+  // Driver status
+  let isOnline = true;
+  let currentRequestId = null;
+  let currentPrice = 0;
+
+  function toggleOnlineStatus() {
+    isOnline = !isOnline;
+    const statusIndicator = document.querySelector('.status-indicator');
+    const statusText = document.querySelector('.status-text');
+    const toggleButton = document.querySelector('.toggle-row + .main .topbar .btn-secondary');
+    
+    if (isOnline) {
+      statusIndicator.classList.remove('offline');
+      statusIndicator.classList.add('online');
+      statusText.textContent = 'Online';
+      toggleButton.textContent = 'Go Offline';
+      showNotification('You are now online and receiving ride requests.');
+    } else {
+      statusIndicator.classList.remove('online');
+      statusIndicator.classList.add('offline');
+      statusText.textContent = 'Offline';
+      toggleButton.textContent = 'Go Online';
+      showNotification('You are now offline. No new ride requests will be received.');
+    }
+  }
+
+  // Price input handling
+  function updatePriceInput(inputId, value) {
+    const input = document.getElementById(inputId);
+    const displaySpan = document.getElementById(`displayPrice${inputId.replace('price', '')}`);
+    
+    // Format value to 2 decimal places
+    const formattedValue = parseFloat(value).toFixed(2);
+    input.value = formattedValue;
+    displaySpan.textContent = formattedValue;
+  }
+
+  // Ride request handling
+  function declineRequest(requestId) {
+    if (confirm('Are you sure you want to decline this ride request?')) {
+      const requestCard = document.querySelector(`.request-card:nth-child(${requestId})`);
+      requestCard.style.opacity = '0.5';
+      requestCard.style.pointerEvents = 'none';
+      
+      setTimeout(() => {
+        requestCard.style.display = 'none';
+        showNotification('Ride request declined.');
+        checkNoRequests();
+      }, 300);
+    }
+  }
+
+  function acceptRequest(requestId) {
+    currentRequestId = requestId;
+    const priceInput = document.getElementById(`price${requestId}`);
+    currentPrice = parseFloat(priceInput.value);
+    
+    // Calculate earnings (price - 15% commission)
+    const commission = currentPrice * 0.15;
+    const earnings = currentPrice - commission;
+    
+    // Update modal
+    document.getElementById('modalFare').textContent = `RM ${currentPrice.toFixed(2)}`;
+    document.getElementById('modalEarnings').textContent = `RM ${earnings.toFixed(2)}`;
+    
+    // Show accept modal
+    document.getElementById('acceptModal').style.display = 'flex';
+  }
+
+  function closeAcceptModal() {
+    document.getElementById('acceptModal').style.display = 'none';
+    currentRequestId = null;
+    currentPrice = 0;
+  }
+
+  function confirmAccept() {
+    if (currentRequestId) {
+      const requestCard = document.querySelector(`.request-card:nth-child(${currentRequestId})`);
+      requestCard.style.opacity = '0.5';
+      requestCard.style.pointerEvents = 'none';
+      
+      setTimeout(() => {
+        requestCard.style.display = 'none';
+        
+        // Show active ride section
+        document.getElementById('activeRide').style.display = 'block';
+        showNotification('Ride accepted! Please proceed to pickup location.');
+        checkNoRequests();
+        
+        closeAcceptModal();
+      }, 300);
+    }
+  }
+
+  // Active ride functions
+  function arriveAtPickup() {
+    showNotification('Passenger notified of your arrival.');
+  }
+
+  function startTrip() {
+    showNotification('Trip started. Safe driving!');
+  }
+
+  function completeTrip() {
+    if (confirm('Complete this trip?')) {
+      document.getElementById('activeRide').style.display = 'none';
+      showNotification('Trip completed! Earnings added to your account.');
+      
+      // Update today's earnings
+      const earningsElement = document.querySelector('.stat-value');
+      const currentEarnings = parseFloat(earningsElement.textContent.replace('RM ', ''));
+      const newEarnings = currentEarnings + currentPrice;
+      earningsElement.textContent = `RM ${newEarnings.toFixed(2)}`;
+      
+      // Update completed rides
+      const ridesElement = document.querySelectorAll('.stat-value')[1];
+      const currentRides = parseInt(ridesElement.textContent);
+      ridesElement.textContent = currentRides + 1;
+      
+      currentRequestId = null;
+      currentPrice = 0;
+    }
+  }
+
+  // Helper functions
+  function refreshRequests() {
+    showNotification('Refreshing ride requests...');
+  }
+
+  function checkNoRequests() {
+    const requestCards = document.querySelectorAll('.request-card');
+    const visibleCards = Array.from(requestCards).filter(card => card.style.display !== 'none');
+    
+    if (visibleCards.length === 0) {
+      document.getElementById('noRequests').style.display = 'block';
+    } else {
+      document.getElementById('noRequests').style.display = 'none';
+    }
+  }
+
+  function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+      <div class="notification-content">
+        <span>${message}</span>
+      </div>
+    `;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAcceptModal();
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('acceptModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('acceptModal')) {
+      closeAcceptModal();
+    }
+  });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    checkNoRequests();
+  });
+</script>
+
+
+</body>
+</html>

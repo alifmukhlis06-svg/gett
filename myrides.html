@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GetInTheCar — My Rides</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dark">
+
+<!-- SIDEBAR -->
+<aside class="sidebar card fade-in">
+  <div class="brand">
+    <div class="logo">NH</div>
+    <div>
+      <h2>GetInTheCar</h2>
+      <div class="small muted">Your Uni BEST E-Hailing</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="user.html">🚗 Book Ride</a>
+    <a href="myrides.html" class="active">🕒 My Rides</a>
+    <a href="userprofile.html">👤 Profile</a>
+    <a href="login.html">🔐 Log Out</a>
+  </nav>
+
+  <div class="toggle-row">
+    <div class="small muted">Dark Mode</div>
+    <div id="darkSwitch" class="switch dark-toggle-on" title="Toggle dark mode">
+      <div class="knob"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="header">My Rides</div>
+      <div class="small muted">View your past and upcoming rides</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn btn-secondary" onclick="refreshRides()">Refresh</button>
+      <button class="btn btn-primary" onclick="goToBooking()">Book New Ride</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('upcoming')">Upcoming Rides</div>
+    <div class="tab" onclick="showTab('past')">Past Rides</div>
+  </div>
+
+  <!-- Upcoming Rides -->
+  <div id="upcomingRides" class="rides-container">
+    <div class="ride-card upcoming fade-in">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">UiTM Arau</span> → <span class="to">Arau KTM Station</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Tomorrow, 8:30 AM</div>
+          <div class="ride-info-item">👤 Driver: Hanis Sofea</div>
+          <div class="ride-info-item">🚘 Proton Saga (AND 2874)</div>
+          <div class="ride-info-item">📏 3.2 km</div>
+        </div>
+        <span class="ride-status status-upcoming">Upcoming</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('upcoming-1')">View Details</button>
+          <button class="btn btn-secondary" onclick="cancelRide('upcoming-1')">Cancel Ride</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        8.50 RM
+        <span class="small">Estimated</span>
+      </div>
+    </div>
+
+    <div class="ride-card upcoming fade-in" style="animation-delay: 0.1s">
+      <div class="ride-icon">🏍️</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Kangar Bus Station</span> → <span class="to">Pusat Bandar Kangar</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 15, 2:00 PM</div>
+          <div class="ride-info-item">👤 Driver: Aslam Haziq</div>
+          <div class="ride-info-item">🏍️ Yamaha LC135 (AJB 2559)</div>
+          <div class="ride-info-item">📏 5.8 km</div>
+        </div>
+        <span class="ride-status status-upcoming">Upcoming</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('upcoming-2')">View Details</button>
+          <button class="btn btn-secondary" onclick="cancelRide('upcoming-2')">Cancel Ride</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        6.80 RM
+        <span class="small">Estimated</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Rides (Hidden by default) -->
+  <div id="pastRides" class="rides-container" style="display: none;">
+    <div class="ride-card completed fade-in">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Yasmeen Nasi Kandar</span> → <span class="to">UiTM Arau</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 10, 9:15 AM</div>
+          <div class="ride-info-item">👤 Driver: Alif Mukhlis</div>
+          <div class="ride-info-item">🚘 Nissan GTR R34 (ALF 1)</div>
+          <div class="ride-info-item">📏 7.5 km</div>
+        </div>
+        <span class="ride-status status-completed">Completed</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-1')">View Details</button>
+          <button class="btn btn-secondary" onclick="rateRide('past-1')">Rate Driver</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        12.30 RM
+        <span class="small">Paid via e-wallet</span>
+      </div>
+    </div>
+
+    <div class="ride-card completed fade-in" style="animation-delay: 0.1s">
+      <div class="ride-icon">🏍️</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">Kolej Dahlia</span> → <span class="to">Kompleks Star</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 8, 6:45 PM</div>
+          <div class="ride-info-item">👤 Driver: Haziq Aiman</div>
+          <div class="ride-info-item">🏍️ Yamaha Y15 (JBS 7191)</div>
+          <div class="ride-info-item">📏 2.1 km</div>
+        </div>
+        <span class="ride-status status-completed">Completed</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-2')">View Details</button>
+          <button class="btn btn-secondary" onclick="rateRide('past-2')">Rate Driver</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        3.70 RM
+        <span class="small">Paid via cash</span>
+      </div>
+    </div>
+
+    <div class="ride-card cancelled fade-in" style="animation-delay: 0.2s">
+      <div class="ride-icon">🚗</div>
+      <div class="ride-details">
+        <div class="ride-route">
+          <span class="from">HEA UITM Arau</span> → <span class="to">Ayam Gepuk Pak Gembus Arau</span>
+        </div>
+        <div class="ride-info">
+          <div class="ride-info-item">📅 Dec 5, 3:30 PM</div>
+          <div class="ride-info-item">👤 Driver: Harith Yusri</div>
+          <div class="ride-info-item">🚘 Toyota Vios (KEN 5782)</div>
+          <div class="ride-info-item">📏 4.3 km</div>
+        </div>
+        <span class="ride-status status-cancelled">Cancelled</span>
+        <div class="ride-actions">
+          <button class="btn btn-primary" onclick="viewRideDetails('past-3')">View Details</button>
+          <button class="btn btn-secondary" onclick="bookSimilarRide('past-3')">Book Again</button>
+        </div>
+      </div>
+      <div class="ride-price">
+        —
+        <span class="small">No charge</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State (Hidden) -->
+  <div id="emptyState" class="empty-state card" style="display: none;">
+    <div class="empty-icon">🚗</div>
+    <h3>No rides found</h3>
+    <p class="small muted">You haven't taken any rides in this category yet.</p>
+    <button class="btn btn-primary" onclick="goToBooking()">Book Your First Ride</button>
+  </div>
+</main>
+
+<!-- Ride Details Modal -->
+<div id="rideModal" class="modal-overlay" style="display: none;">
+  <div class="modal card">
+    <div class="modal-header">
+      <div class="modal-title">Ride Details</div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-content">
+      <div class="small muted" id="modalStatus">Upcoming Ride</div>
+      
+      <div class="modal-details">
+        <div class="detail-item">
+          <span class="detail-label">From:</span>
+          <span id="modalFrom">UiTM Arau</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">To:</span>
+          <span id="modalTo">Arau KTM Station</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Date & Time:</span>
+          <span id="modalDateTime">Tomorrow, 8:30 AM</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Driver:</span>
+          <span id="modalDriver">Hanis Sofea</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Vehicle:</span>
+          <span id="modalVehicle">Proton Saga (AND 2874)</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Distance:</span>
+          <span id="modalDistance">3.2 km</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Estimated Duration:</span>
+          <span id="modalDuration">8 minutes</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Payment Method:</span>
+          <span id="modalPayment">QR payments</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Fare:</span>
+          <span class="ride-price" id="modalFare">RM 8.50</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Theme toggle logic
+  const body = document.body;
+  const darkSwitch = document.getElementById('darkSwitch');
+  darkSwitch.addEventListener('click', () => {
+    const knob = darkSwitch.querySelector('.knob');
+    darkSwitch.classList.toggle('dark-toggle-on');
+    body.classList.toggle('dark');
+    // small visual: move knob
+    if (body.classList.contains('dark')) {
+      knob.style.left = '25px';
+      knob.style.boxShadow = '0 10px 30px rgba(255, 221, 0, 0.12)';
+    } else {
+      knob.style.left = '3px';
+      knob.style.boxShadow = '0 6px 18px rgba(255, 59, 48, 0.12)';
+    }
+  });
+
+  // Tab switching
+  function showTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    if (tabName === 'upcoming') {
+      document.querySelector('.tab:first-child').classList.add('active');
+      document.getElementById('upcomingRides').style.display = 'flex';
+      document.getElementById('pastRides').style.display = 'none';
+      document.getElementById('emptyState').style.display = 'none';
+    } else {
+      document.querySelector('.tab:last-child').classList.add('active');
+      document.getElementById('upcomingRides').style.display = 'none';
+      document.getElementById('pastRides').style.display = 'flex';
+      document.getElementById('emptyState').style.display = 'none';
+    }
+  }
+
+  // Ride data for modals
+  const rideData = {
+    'upcoming-1': {
+      from: 'UiTM Arau',
+      to: 'Arau KTM Station',
+      dateTime: 'Tomorrow, 8:30 AM',
+      driver: 'Hanis Sofea',
+      vehicle: 'Proton Saga (AND 2874)',
+      distance: '3.2 km',
+      duration: '8 minutes',
+      payment: 'QR payments',
+      fare: 'RM 8.50',
+      status: 'upcoming'
+    },
+    'upcoming-2': {
+      from: 'Kangar Bus Station',
+      to: 'Pusat Bandar Kangar',
+      dateTime: 'Dec 15, 2:00 PM',
+      driver: 'Aslam Haziq',
+      vehicle: 'Yamaha LC135 (AJB 2559)',
+      distance: '5.8 km',
+      duration: '12 minutes',
+      payment: 'Cash',
+      fare: 'RM 6.80',
+      status: 'upcoming'
+    },
+    'past-1': {
+      from: 'Yasmeen Nasi Kandar',
+      to: 'UiTM Arau',
+      dateTime: 'Dec 10, 9:15 AM',
+      driver: 'Alif Mukhlis',
+      vehicle: 'Nissan GTR R34 (ALF 1)',
+      distance: '7.5 km',
+      duration: '15 minutes',
+      payment: 'e-Wallet',
+      fare: 'RM 12.30',
+      status: 'completed'
+    },
+    'past-2': {
+      from: 'Kolej Dahlia',
+      to: 'Kompleks Star',
+      dateTime: 'Dec 8, 6:45 PM',
+      driver: 'Haziq Aiman',
+      vehicle: 'Yamaha Y15 (JBS 7191)',
+      distance: '2.1 km',
+      duration: '5 minutes',
+      payment: 'Cash',
+      fare: 'RM 3.70',
+      status: 'completed'
+    },
+    'past-3': {
+      from: 'HEA UITM Arau',
+      to: 'Ayam Gepuk Pak Gembus Arau',
+      dateTime: 'Dec 5, 3:30 PM',
+      driver: 'Harith Yusri',
+      vehicle: 'Toyota Vios (KEN 5782)',
+      distance: '4.3 km',
+      duration: '10 minutes',
+      payment: '—',
+      fare: '—',
+      status: 'cancelled'
+    }
+  };
+
+  // View ride details
+  function viewRideDetails(rideId) {
+    const ride = rideData[rideId];
+    if (!ride) return;
+
+    // Update modal content
+    document.getElementById('modalStatus').textContent = 
+      ride.status === 'upcoming' ? 'Upcoming Ride' :
+      ride.status === 'completed' ? 'Completed Ride' : 'Cancelled Ride';
+    
+    document.getElementById('modalFrom').textContent = ride.from;
+    document.getElementById('modalTo').textContent = ride.to;
+    document.getElementById('modalDateTime').textContent = ride.dateTime;
+    document.getElementById('modalDriver').textContent = ride.driver;
+    document.getElementById('modalVehicle').textContent = ride.vehicle;
+    document.getElementById('modalDistance').textContent = ride.distance;
+    document.getElementById('modalDuration').textContent = ride.duration;
+    document.getElementById('modalPayment').textContent = ride.payment;
+    document.getElementById('modalFare').textContent = ride.fare;
+
+    // Show modal
+    document.getElementById('rideModal').style.display = 'flex';
+  }
+
+  // Close modal
+  function closeModal() {
+    document.getElementById('rideModal').style.display = 'none';
+  }
+
+  // Cancel ride
+  function cancelRide(rideId) {
+    if (confirm('Are you sure you want to cancel this ride? A cancellation fee may apply.')) {
+      alert('Ride cancelled successfully.');
+      // In a real app, you would update the UI here
+    }
+  }
+
+  // Rate ride
+  function rateRide(rideId) {
+    const rating = prompt('Rate this ride (1-5 stars):', '5');
+    if (rating && rating >= 1 && rating <= 5) {
+      alert(`Thank you! You rated ${rating} stars.`);
+    }
+  }
+
+  // Book similar ride
+  function bookSimilarRide(rideId) {
+    alert('Opening booking page with pre-filled details...');
+    // In a real app, you would redirect to booking page with pre-filled data
+  }
+
+  // Refresh rides
+  function refreshRides() {
+    const tabs = document.querySelectorAll('.tab');
+    const activeTab = Array.from(tabs).find(tab => tab.classList.contains('active'));
+    
+    // Show loading state
+    alert('Refreshing rides...');
+    
+    // Simulate API call delay
+    setTimeout(() => {
+      alert('Rides refreshed!');
+    }, 500);
+  }
+
+  // Navigate to booking page
+  function goToBooking() {
+    window.location.href = 'user.html';
+  }
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('rideModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('rideModal')) {
+      closeModal();
+    }
+  });
+</script>
+</body>
+</html>
